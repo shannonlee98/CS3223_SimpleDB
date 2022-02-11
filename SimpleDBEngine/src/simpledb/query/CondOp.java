@@ -48,7 +48,6 @@ public class CondOp {
             case "!=":
                 return types.notEquals;
             default:
-                //TODO might need a new exception case here (can reuse?)
                 throw new BadSyntaxException();
         }
     }

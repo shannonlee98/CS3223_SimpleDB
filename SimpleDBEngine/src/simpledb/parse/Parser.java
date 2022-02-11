@@ -37,7 +37,6 @@ public class Parser {
    }
 
    public CondOp condOperator() {
-      //TODO might need***
        return new CondOp(lex.eatCondOp());
    }
    
@@ -62,7 +61,7 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> fields = selectList();
+      List<String> selectFields = selectList();
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
@@ -70,7 +69,13 @@ public class Parser {
          lex.eatKeyword("where");
          pred = predicate();
       }
-      return new QueryData(fields, tables, pred);
+      Map<String, Boolean> orderByFields = new HashMap<String, Boolean>();
+      if (lex.matchKeyword("order")) {
+          lex.eatKeyword("order");
+          lex.eatKeyword("by");
+          orderByFields = orderByList();
+       }
+      return new QueryData(selectFields, tables, pred, orderByFields);
    }
    
    private List<String> selectList() {
@@ -81,6 +86,25 @@ public class Parser {
          L.addAll(selectList());
       }
       return L;
+   }
+
+   private Map<String, Boolean> orderByList() {
+      Map<String, Boolean> orderByFields = new HashMap<String, Boolean>();
+      String field = field();
+      Boolean isAsc = true;
+      if (lex.matchKeyword("asc")) {
+         lex.eatKeyword("asc");
+      } else if (lex.matchKeyword("desc")) {
+         lex.eatKeyword("desc");
+         isAsc = false;
+      }
+
+      orderByFields.put(field, isAsc);
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         orderByFields.putAll(orderByList());
+      }
+      return orderByFields;
    }
    
    private Collection<String> tableList() {

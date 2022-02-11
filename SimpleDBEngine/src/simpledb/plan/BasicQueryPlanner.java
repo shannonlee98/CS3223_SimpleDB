@@ -4,6 +4,7 @@ import java.util.*;
 import simpledb.tx.Transaction;
 import simpledb.metadata.*;
 import simpledb.parse.*;
+import simpledb.materialize.*;
 
 /**
  * The simplest, most naive query planner possible.
@@ -44,7 +45,14 @@ public class BasicQueryPlanner implements QueryPlanner {
       p = new SelectPlan(p, data.pred());
       
       //Step 4: Project on the field names
-      p = new ProjectPlan(p, data.fields());
+      p = new ProjectPlan(p, data.selectFields());
+
+      //Step 5: Add a sort plan if ordered
+      if (data.OrderByFields().size() > 0) {
+          p = new SortPlan(tx, p, data.OrderByFields());
+       }
+
       return p;
+      
    }
 }

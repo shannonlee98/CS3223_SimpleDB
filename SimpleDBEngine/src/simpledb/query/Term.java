@@ -51,7 +51,6 @@ public class Term {
          case notEquals:
             return !lhsval.equals(rhsval);
          default:
-            //TODO might need a new exception case here (can reuse?)
             throw new BadSyntaxException();
       }
    }

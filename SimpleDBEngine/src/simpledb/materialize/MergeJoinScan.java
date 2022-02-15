@@ -10,8 +10,9 @@ public class MergeJoinScan implements Scan {
    private Scan s1;
    private SortScan s2;
    private String fldname1, fldname2;
-   private Constant joinval = null;
-   
+    private Constant joinval = null;
+//    private Constant joinval = new Constant("null");
+
    /**
     * Create a mergejoin scan for the two underlying sorted scans.
     * @param s1 the LHS sorted scan
@@ -22,6 +23,21 @@ public class MergeJoinScan implements Scan {
    public MergeJoinScan(Scan s1, SortScan s2, String fldname1, String fldname2) {
       this.s1 = s1;
       this.s2 = s2;
+
+      //print s1 n s2 check if sorted according to fields
+
+//       System.out.println(fldname1 + ": ");
+//       while (s1.next())
+//           System.out.println(s1.getInt(fldname1));
+//       s1.close();
+//
+//       System.out.println("\n" + fldname2 + ": ");
+//       while (s2.next())
+//           System.out.println(s2.getInt(fldname2));
+//       s2.close();
+
+       //________________________________________________
+
       this.fldname1 = fldname1;
       this.fldname2 = fldname2;
       beforeFirst();
@@ -60,17 +76,17 @@ public class MergeJoinScan implements Scan {
     * When one of the scans runs out of records, return false.
     * @see simpledb.query.Scan#next()
     */
-   public boolean next() {
+    public boolean next() {
       boolean hasmore2 = s2.next();
+
       if (hasmore2 && s2.getVal(fldname2).equals(joinval))
          return true;
-      
+
       boolean hasmore1 = s1.next();
       if (hasmore1 && s1.getVal(fldname1).equals(joinval)) {
          s2.restorePosition();
          return true;
       }
-      
       while (hasmore1 && hasmore2) {
          Constant v1 = s1.getVal(fldname1);
          Constant v2 = s2.getVal(fldname2);

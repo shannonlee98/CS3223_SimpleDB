@@ -1,11 +1,14 @@
 package simpledb.opt;
 
 import java.util.Map;
+
+import org.w3c.dom.ls.LSOutput;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.*;
 import simpledb.index.planner.*;
+import simpledb.materialize.MergeJoinPlan;
 import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.*;
 
@@ -59,12 +62,13 @@ class TablePlanner {
     * @param current the specified plan
     * @return a join plan of the plan and this table
     */
-   public Plan makeJoinPlan(Plan current) {
+   public Plan makeJoinPlan(Plan current) { //todo Query Optimiser cost model should be called here to decide which Join0
       Schema currsch = current.schema();
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeIndexJoin(current, currsch);
+      Plan p = makeMergeJoin(current, currsch);
+//      Plan p = makeIndexJoin(current, currsch);
       if (p == null)
          p = makeProductJoin(current, currsch);
       return p;
@@ -92,7 +96,20 @@ class TablePlanner {
       }
       return null;
    }
-   
+
+   private Plan makeMergeJoin(Plan current, Schema currsch) {
+      for (String fldname : indexes.keySet()) {
+         String outerfield = mypred.equatesWithField(fldname);
+         if (outerfield != null && currsch.hasField(outerfield)) {
+            System.out.println("outerfield: (LHS)" + outerfield + "| fldname: (RHS)" + fldname);
+            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
+            p = addSelectPred(p);
+            return addJoinPred(p, currsch);
+         }
+      }
+      return null;
+   }
+
    private Plan makeIndexJoin(Plan current, Schema currsch) {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);

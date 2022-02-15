@@ -25,6 +25,9 @@ public class Constant implements Comparable<Constant> {
    }
    
    public boolean equals(Object obj) {
+      if (obj == null && this != null) {
+         return false;
+      }
       Constant c = (Constant) obj;
       return (ival != null) ? ival.equals(c.ival) : sval.equals(c.sval);
    }

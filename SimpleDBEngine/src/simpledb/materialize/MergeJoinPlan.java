@@ -32,17 +32,20 @@ public class MergeJoinPlan implements Plan {
          put(fldname1, true);
       }};
       this.p1 = new SortPlan(tx, p1, sortlist1);
-//      this.p1 = p1;
+
+
+//       Original code
+//      List<String> sortlist1 = Arrays.asList(fldname1);
+//      this.p1 = new SortPlan(tx, p1, sortlist1);
       
       this.fldname2 = fldname2;
       Map<String, Boolean> sortlist2 = new HashMap<>(){{
          put(fldname2, true);
       }};
       this.p2 = new SortPlan(tx, p2, sortlist2);
-//      this.p2 = p2;
       
-      sch.addAll(p1.schema());
-      sch.addAll(p2.schema());
+      sch.addAll(this.p1.schema());
+      sch.addAll(this.p2.schema());
    }
    
    /** The method first sorts its two underlying scans

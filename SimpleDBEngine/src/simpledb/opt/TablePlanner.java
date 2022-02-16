@@ -9,6 +9,7 @@ import simpledb.query.*;
 import simpledb.metadata.*;
 import simpledb.index.planner.*;
 import simpledb.materialize.MergeJoinPlan;
+import simpledb.materialize.BlockJoinPlan;
 import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.*;
 
@@ -67,10 +68,31 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = makeMergeJoin(current, currsch);
-//      Plan p = makeIndexJoin(current, currsch);
-      if (p == null)
-         p = makeProductJoin(current, currsch);
+
+      Plan p = makeBlockJoin(current, currsch);
+      int cost = p.blocksAccessed();
+      System.out.println("Block join cost: " + cost);
+
+      Plan mergePlan = makeMergeJoin(current, currsch);
+      if (mergePlan.blocksAccessed() < cost) {
+         p = mergePlan;
+         cost = mergePlan.blocksAccessed();
+         System.out.println("Merge join cost: " + cost);
+      }
+
+      Plan indexPlan = makeIndexJoin(current, currsch);
+      if (indexPlan.blocksAccessed() < cost) {
+         p = indexPlan;
+         cost = indexPlan.blocksAccessed();
+         System.out.println("Index join cost: " + cost);
+      }
+      Plan productPlan = makeIndexJoin(current, currsch);
+      if (productPlan.blocksAccessed() < cost) {
+         p = productPlan;
+         cost = productPlan.blocksAccessed();
+         System.out.println("Product join cost: " + cost);
+      }
+
       return p;
    }
    
@@ -97,11 +119,22 @@ class TablePlanner {
       return null;
    }
 
+   private Plan makeBlockJoin(Plan current, Schema currsch) {
+      for (String fldname : indexes.keySet()) {
+         String outerfield = mypred.equatesWithField(fldname);
+         if (outerfield != null && currsch.hasField(outerfield)) {
+            Plan p = new BlockJoinPlan(tx, current, myplan, outerfield, fldname);
+            p = addSelectPred(p);
+            return addJoinPred(p, currsch);
+         }
+      }
+      return null;
+   }
+
    private Plan makeMergeJoin(Plan current, Schema currsch) {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
-            System.out.println("outerfield: (LHS)" + outerfield + "| fldname: (RHS)" + fldname);
             Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);

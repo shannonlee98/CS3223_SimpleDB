@@ -29,8 +29,8 @@ public class IndexJoinTest {
 
 		// Two different ways to use the index in simpledb:
 //		useIndexManually(studentplan, enrollplan, sidIdx, "sid");
-		useIndexScan(studentplan, enrollplan, sidIdx, "sid");
-//		useBlockScan(tx, studentplan, enrollplan, "sid", "studentid");
+//		useIndexScan(studentplan, enrollplan, sidIdx, "sid");
+		useBlockScan(tx, studentplan, enrollplan, "sid", "studentid");
 
 		tx.commit();
 	}

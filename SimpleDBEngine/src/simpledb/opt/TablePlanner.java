@@ -71,26 +71,22 @@ class TablePlanner {
 
       Plan p = makeBlockJoin(current, currsch);
       int cost = p.blocksAccessed();
-      System.out.println("Block join cost: " + cost);
 
       Plan mergePlan = makeMergeJoin(current, currsch);
       if (mergePlan.blocksAccessed() < cost) {
          p = mergePlan;
          cost = mergePlan.blocksAccessed();
-         System.out.println("Merge join cost: " + cost);
       }
 
       Plan indexPlan = makeIndexJoin(current, currsch);
       if (indexPlan.blocksAccessed() < cost) {
          p = indexPlan;
          cost = indexPlan.blocksAccessed();
-         System.out.println("Index join cost: " + cost);
       }
       Plan productPlan = makeIndexJoin(current, currsch);
       if (productPlan.blocksAccessed() < cost) {
          p = productPlan;
          cost = productPlan.blocksAccessed();
-         System.out.println("Product join cost: " + cost);
       }
 
       return p;

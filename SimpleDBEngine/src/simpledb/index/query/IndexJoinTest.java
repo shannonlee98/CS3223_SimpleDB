@@ -64,7 +64,7 @@ public class IndexJoinTest {
 		Scan s = idxplan.open();
 
 		while (s.next()) {
-			System.out.println(s.getString("grade"));
+			System.out.println(s.getString("sname") + " " + s.getString("grade"));
 		}
 		s.close();
 	}

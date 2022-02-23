@@ -1,19 +1,23 @@
-package simpledb.index.query;
+package simpledb.materialize;
 
-import java.util.Map;
+import simpledb.index.Index;
+import simpledb.index.planner.IndexJoinPlan;
+import simpledb.metadata.IndexInfo;
+import simpledb.metadata.MetadataMgr;
+import simpledb.plan.Plan;
+import simpledb.plan.TablePlan;
+import simpledb.query.Constant;
+import simpledb.query.Scan;
+import simpledb.record.RID;
+import simpledb.record.TableScan;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
-import simpledb.record.*;
-import simpledb.metadata.*;
-import simpledb.plan.*;
-import simpledb.query.*;
-import simpledb.index.*;
-import simpledb.index.planner.IndexJoinPlan;
-import simpledb.materialize.HashJoinPlan;
+
+import java.util.Map;
 
 // Find the grades of all students.
 
-public class IndexJoinTest {
+public class HashJoinTest {
 	public static void main(String[] args) {
 		SimpleDB db = new SimpleDB("studentdb");
       MetadataMgr mdm = db.mdMgr();
@@ -29,8 +33,8 @@ public class IndexJoinTest {
 
 		// Two different ways to use the index in simpledb:
 //		useIndexManually(studentplan, enrollplan, sidIdx, "sid");
-		useIndexScan(studentplan, enrollplan, sidIdx, "sid");
-//		useBlockScan(tx, studentplan, enrollplan, "sid", "studentid");
+//		useIndexScan(studentplan, enrollplan, sidIdx, "sid");
+		useBlockScan(tx, studentplan, enrollplan, "sid", "studentid");
 
 		tx.commit();
 	}
@@ -64,7 +68,7 @@ public class IndexJoinTest {
 		Scan s = idxplan.open();
 
 		while (s.next()) {
-			System.out.println(s.getString("sname") + " " + s.getString("grade"));
+			System.out.println(s.getString("grade"));
 		}
 		s.close();
 	}
@@ -75,7 +79,7 @@ public class IndexJoinTest {
 		Scan s = blockplan.open();
 
 		while (s.next()) {
-			System.out.println(s.getString("grade"));
+			System.out.println(s.getString("sname") + " " + s.getString("grade"));
 		}
 		s.close();
 	}

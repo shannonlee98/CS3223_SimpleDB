@@ -1,6 +1,8 @@
 package simpledb.plan;
 
 import java.util.List;
+import java.util.Map;
+
 import simpledb.record.Schema;
 import simpledb.query.*;
 

@@ -2,14 +2,13 @@ package simpledb.opt;
 
 import java.util.Map;
 
-import org.w3c.dom.ls.LSOutput;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.*;
 import simpledb.index.planner.*;
 import simpledb.materialize.MergeJoinPlan;
-import simpledb.materialize.BlockJoinPlan;
+import simpledb.materialize.HashJoinPlan;
 import simpledb.multibuffer.MultibufferProductPlan;
 import simpledb.plan.*;
 
@@ -119,7 +118,7 @@ class TablePlanner {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new BlockJoinPlan(tx, current, myplan, outerfield, fldname);
+            Plan p = new HashJoinPlan(tx, current, myplan, outerfield, fldname);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }

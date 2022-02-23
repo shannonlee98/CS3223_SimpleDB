@@ -9,29 +9,40 @@ import simpledb.query.*;
  * @author Edward Sciore
  */
 public class QueryData {
-   private List<String> selectFields;
+   private List<String> fields;
+   private List<Pair<String, String>> aggregates;
    private Collection<String> tables;
    private Predicate pred;
    private Map<String, Boolean> orderByFields;
+   private List<String> groupByFields;
 
 
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> selectFields, Collection<String> tables, Predicate pred, Map<String, Boolean> orderByFields) {
-      this.selectFields = selectFields;
+   public QueryData(List<String> fields, List<Pair<String, String>> aggregates, Collection<String> tables, Predicate pred,
+                    Map<String, Boolean> orderByFields, List<String> groupByFields) {
+      this.fields = fields;
+      this.aggregates = aggregates;
       this.tables = tables;
       this.pred = pred;
       this.orderByFields = orderByFields;
+      this.groupByFields = groupByFields;
    }
    
    /**
     * Returns the fields mentioned in the select clause.
     * @return a list of field names
     */
-   public List<String> selectFields() {
-      return selectFields;
+   public List<String> fields() {
+      return fields;
    }
+
+   /**
+    * Returns the aggregates mentioned in the select clause.
+    * @return a list of pairs containing aggregate and field names
+    */
+   public List<Pair<String,String>> aggregates() {return aggregates; }
 
    /**
     * Returns the tables mentioned in the from clause.
@@ -50,13 +61,15 @@ public class QueryData {
       return pred;
    }
 
-   public Map<String, Boolean> OrderByFields() {
+   public Map<String, Boolean> orderByFields() {
       return orderByFields;
    }
-   
+
+   public List<String> groupByFields() { return groupByFields; }
+
    public String toString() {
       String result = "select ";
-      for (String fldname : selectFields)
+      for (String fldname : fields)
          result += fldname + ", ";
       result = result.substring(0, result.length()-2); //remove final comma
       result += " from ";

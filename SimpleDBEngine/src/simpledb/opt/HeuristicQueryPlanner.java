@@ -49,12 +49,15 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       }
       
       // Step 4.  Project on the field names and return
-      Plan p = new ProjectPlan(currentplan, data.selectFields());
+      Plan p = new ProjectPlan(currentplan, data.fields());
 
       //Step 5: Add a sort plan if ordered
-      if (data.OrderByFields().size() > 0) {
-         p = new SortPlan(tx, p, data.OrderByFields());
+      if (data.orderByFields().size() > 0) {
+         p = new SortPlan(tx, p, data.orderByFields());
       }
+
+      // TODO: add step 6 for group by plan?????
+
       return p;
    }
    

@@ -9,6 +9,7 @@ import java.io.*;
  */
 public class Lexer {
    private Collection<String> keywords;
+   private Collection<String> aggregates;
    private Collection<String> condOperatorTypes;
    private StreamTokenizer tok;
    
@@ -18,6 +19,7 @@ public class Lexer {
     */
    public Lexer(String s) {
       initKeywords();
+      initAggregate();
       initCondOperatorTypes();
       tok = new StreamTokenizer(new StringReader(s));
       tok.ordinaryChar('.');   //disallow "." in identifiers
@@ -61,6 +63,14 @@ public class Lexer {
     */
    public boolean matchKeyword(String w) {
       return tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equals(w);
+   }
+
+   /**
+    * Returns true if the current token is an aggregate function.
+    * @return true if the current token is an aggregate
+    */
+   public boolean matchAggregate() {
+      return tok.ttype == StreamTokenizer.TT_WORD && aggregates.contains(tok.sval);
    }
    
    /**
@@ -158,6 +168,19 @@ public class Lexer {
    }
 
    /**
+    * Throws an exception if the current token is not the
+    * specified keyword.
+    * Otherwise, moves to the next token.
+    */
+   public String eatAggregate() {
+      if (!matchAggregate())
+         throw new BadSyntaxException();
+      String aggregate = tok.sval;
+      nextToken();
+      return aggregate;
+   }
+
+   /**
     * Throws an exception if the current token is not a
     * recognised index type.
     * Otherwise, moves to the next token.
@@ -171,18 +194,6 @@ public class Lexer {
       nextToken();
       return idxtype;
    }
-   
-   /**
-    * Throws an exception if the current token is not 
-    * an operator. 
-    * Otherwise, moves to the next token.
-    * @param op a string denoting the operator
-    */
-//   public void eatOPR(String op) {
-//      if (!matchDelim(d))
-//         throw new BadSyntaxException();
-//      nextToken();
-//   }
    
    /**
     * Throws an exception if the current token is not 
@@ -207,12 +218,17 @@ public class Lexer {
          throw new BadSyntaxException();
       }
    }
-   
+
    private void initKeywords() {
       keywords = Arrays.asList("select", "from", "where", "and",
-                               "insert", "into", "values", "delete", "update", "set", 
-                               "create", "table", "int", "varchar", "view", "as", "index", "on",
-                               "btree", "using", "hash", "order", "by", "asc", "desc");
+              "insert", "into", "values", "delete", "update", "set",
+              "create", "table", "int", "varchar", "view", "as", "index", "on",
+              "btree", "using", "hash", "order", "by", "asc", "desc",
+              "group", "by");
+   }
+
+   private void initAggregate() {
+      aggregates = Arrays.asList("sum", "count", "avg", "min", "max");
    }
 
    private void initCondOperatorTypes() {

@@ -45,11 +45,11 @@ public class BasicQueryPlanner implements QueryPlanner {
       p = new SelectPlan(p, data.pred());
       
       //Step 4: Project on the field names
-      p = new ProjectPlan(p, data.selectFields());
+      p = new ProjectPlan(p, data.fields());
 
       //Step 5: Add a sort plan if ordered
-      if (data.OrderByFields().size() > 0) {
-          p = new SortPlan(tx, p, data.OrderByFields());
+      if (data.orderByFields().size() > 0) {
+          p = new SortPlan(tx, p, data.orderByFields());
        }
 
       return p;

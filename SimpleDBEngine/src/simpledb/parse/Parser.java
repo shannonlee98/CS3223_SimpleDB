@@ -21,6 +21,10 @@ public class Parser {
    public String field() {
       return lex.eatId();
    }
+
+   public String aggregate() {
+      return lex.eatAggregate();
+   }
    
    public Constant constant() {
       if (lex.matchStringConstant())
@@ -61,7 +65,13 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> selectFields = selectList();
+      List<String> fields = new ArrayList<>();
+      List<Pair<String, String>> aggregates = new ArrayList<>();
+      if (lex.matchAggregate()) {
+         aggregates = aggregateList();
+      } else {
+         fields = selectList();
+      }
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
@@ -69,23 +79,44 @@ public class Parser {
          lex.eatKeyword("where");
          pred = predicate();
       }
-      Map<String, Boolean> orderByFields = new HashMap<String, Boolean>();
+      Map<String, Boolean> orderByFields = new HashMap<>();
       if (lex.matchKeyword("order")) {
           lex.eatKeyword("order");
           lex.eatKeyword("by");
           orderByFields = orderByList();
        }
-      return new QueryData(selectFields, tables, pred, orderByFields);
+      List<String> groupByFields = new ArrayList<>();
+      if (lex.matchKeyword("group")) {
+         lex.eatKeyword("group");
+         lex.eatKeyword("by");
+         groupByFields = groupByList();
+      }
+      return new QueryData(fields, aggregates, tables, pred, orderByFields, groupByFields);
    }
    
    private List<String> selectList() {
-      List<String> L = new ArrayList<String>();
-      L.add(field());
+      List<String> list = new ArrayList<>();
+      list.add(field());
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
-         L.addAll(selectList());
+         list.addAll(selectList());
       }
-      return L;
+      return list;
+   }
+
+   private List<Pair<String,String>> aggregateList() {
+      List<Pair<String,String>> list = new ArrayList<>();
+      String aggregate = aggregate();
+      lex.eatDelim('(');
+      String field = field();
+      lex.eatDelim(')');
+      Pair<String,String> pair = new Pair<>(field, aggregate);
+      list.add(pair);
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         list.addAll(aggregateList());
+      }
+      return list;
    }
 
    private Map<String, Boolean> orderByList() {
@@ -105,6 +136,18 @@ public class Parser {
          orderByFields.putAll(orderByList());
       }
       return orderByFields;
+   }
+
+   private List<String> groupByList() {
+      List<String> groupByFields = new ArrayList<>();
+      String field = field();
+
+      groupByFields.add(field);
+      if (lex.matchDelim(',')) {
+         lex.eatDelim(',');
+         groupByFields.addAll(groupByList());
+      }
+      return groupByFields;
    }
    
    private Collection<String> tableList() {

@@ -51,7 +51,7 @@ public class BetterQueryPlanner implements QueryPlanner {
       p = new SelectPlan(p, data.pred());
       
       //Step 4: Project on the field names
-      p = new ProjectPlan(p, data.selectFields());
+      p = new ProjectPlan(p, data.fields());
       return p;
    }
 }

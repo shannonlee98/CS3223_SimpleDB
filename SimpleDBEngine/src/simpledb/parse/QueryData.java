@@ -3,6 +3,7 @@ package simpledb.parse;
 import java.util.*;
 
 import simpledb.query.*;
+import simpledb.materialize.AggregationFn;
 
 /**
  * Data for the SQL <i>select</i> statement.
@@ -10,7 +11,7 @@ import simpledb.query.*;
  */
 public class QueryData {
    private List<String> fields;
-   private List<Pair<String, String>> aggregates;
+   private List<AggregationFn> aggregates;
    private Collection<String> tables;
    private Predicate pred;
    private Map<String, Boolean> orderByFields;
@@ -20,7 +21,7 @@ public class QueryData {
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, List<Pair<String, String>> aggregates, Collection<String> tables, Predicate pred,
+   public QueryData(List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
                     Map<String, Boolean> orderByFields, List<String> groupByFields) {
       this.fields = fields;
       this.aggregates = aggregates;
@@ -28,6 +29,9 @@ public class QueryData {
       this.pred = pred;
       this.orderByFields = orderByFields;
       this.groupByFields = groupByFields;
+      System.out.println(Arrays.toString(fields.toArray()));
+      System.out.println(Arrays.toString(aggregates.toArray()));
+      System.out.println(Arrays.toString(groupByFields.toArray()));
    }
    
    /**
@@ -42,7 +46,7 @@ public class QueryData {
     * Returns the aggregates mentioned in the select clause.
     * @return a list of pairs containing aggregate and field names
     */
-   public List<Pair<String,String>> aggregates() {return aggregates; }
+   public List<AggregationFn> aggregates() {return aggregates; }
 
    /**
     * Returns the tables mentioned in the from clause.

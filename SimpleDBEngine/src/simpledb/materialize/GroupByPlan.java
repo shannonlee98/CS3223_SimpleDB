@@ -28,7 +28,7 @@ public class GroupByPlan implements Plan {
     * @param tx the calling transaction
     */
    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      Map<String, Boolean> mapGroupfields = new HashMap<String, Boolean>();
+      Map<String, Boolean> mapGroupfields = new HashMap<>();
       for (String field : groupfields) {
          mapGroupfields.put(field, true);
       }

@@ -52,6 +52,11 @@ public class BasicQueryPlanner implements QueryPlanner {
           p = new SortPlan(tx, p, data.orderByFields());
        }
 
+      //Step 6: Add a group plan if there is aggregation or 'group by'
+      if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates());
+      }
+
       return p;
       
    }

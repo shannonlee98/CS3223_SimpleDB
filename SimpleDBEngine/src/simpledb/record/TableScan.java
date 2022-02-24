@@ -5,6 +5,8 @@ import simpledb.file.BlockId;
 import simpledb.query.*;
 import simpledb.tx.Transaction;
 
+import java.util.Arrays;
+
 /**
  * Provides the abstraction of an arbitrarily large array
  * of records.
@@ -53,6 +55,8 @@ public class TableScan implements UpdateScan {
    }
 
    public Constant getVal(String fldname) {
+      System.out.println(fldname);
+      System.out.println(Arrays.toString(layout.schema().fields().toArray()));
       if (layout.schema().type(fldname) == INTEGER)
          return new Constant(getInt(fldname));
       else

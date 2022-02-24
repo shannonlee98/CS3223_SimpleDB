@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.*;
 
+import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
 import simpledb.tx.Transaction;
 import simpledb.metadata.MetadataMgr;
@@ -56,7 +57,11 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          p = new SortPlan(tx, p, data.orderByFields());
       }
 
-      // TODO: add step 6 for group by plan?????
+      //Step 6: Add a group plan if there is aggregation or 'group by'
+      if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
+         System.out.println("group plan activated");
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates());
+      }
 
       return p;
    }

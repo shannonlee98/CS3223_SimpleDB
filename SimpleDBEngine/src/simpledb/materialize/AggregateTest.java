@@ -25,17 +25,16 @@ public class AggregateTest {
             Planner planner = db.planner();
 
             // analogous to the statement
-            String qry = "select max(sid), majorid from student group by majorid ";
+            String qry = "select count(sid), majorid from student";
             Plan p = planner.createQueryPlan(qry, tx);
 
             // analogous to the result set
             Scan s = p.open();
 
-            System.out.println("Name\tMajor");
+            System.out.println("Majorid");
             while (s.next()) {
-                String sname = s.getString("sname"); //SimpleDB stores field names
-                String dname = s.getString("dname"); //in lower case
-                System.out.println(sname + "\t" + dname);
+                String majorid = s.getString("majorid"); //SimpleDB stores field names
+                System.out.println(majorid);
             }
             s.close();
             tx.commit();

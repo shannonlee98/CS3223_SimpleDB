@@ -19,7 +19,7 @@ public class GroupByScan implements Scan {
     * Create a groupby scan, given a grouped table scan.
     * @param s the grouped scan
     * @param groupfields the group fields
-    * @param aggfns the aggregation functions
+    * @param aggfns the aggregation functions  (-all-)
     */
    public GroupByScan(Scan s, List<String> groupfields, List<AggregationFn> aggfns) {
       this.s = s;

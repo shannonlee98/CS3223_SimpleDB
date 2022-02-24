@@ -43,7 +43,7 @@ public class BlockJoinScan implements Scan {
    public BlockJoinScan(Transaction tx, TableScan outer, String joinfieldOuter, Scan inner, String joinfieldInner) {
       this.joinfieldInner = joinfieldInner;
       this.joinfieldOuter = joinfieldOuter;
-      this.blockSize = (tx.availableBuffs() - 2); //* SimpleDB.BLOCK_SIZE; //Get B-2 (this is the block )
+      this.blockSize = Math.max(tx.availableBuffs() - 2, 1);
       this.outer = outer;
       this.inner = inner;
 

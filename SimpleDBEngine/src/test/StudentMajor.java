@@ -24,11 +24,10 @@ public class StudentMajor {
          Transaction tx  = db.newTx();
          Planner planner = db.planner();
          
-         // analogous to the statement
-//         String qry = "select SName, DName "
-//                 + "from DEPT, STUDENT "
-//                 + "where MajorId = DId";
-         String qry = "select max(sid), majorid from student group by majorid ";
+//          analogous to the statement
+         String qry = "select SName, DName "
+                 + "from DEPT, STUDENT "
+                 + "where MajorId = DId";
          Plan p = planner.createQueryPlan(qry, tx);
          
          // analogous to the result set

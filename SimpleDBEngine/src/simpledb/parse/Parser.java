@@ -71,20 +71,23 @@ public class Parser {
         List<AggregationFn> aggregates = new ArrayList<>();
 
         while (true) {
+            String field;
             if (lex.matchAggregate()) {
-                aggregates.add(getAggregateFn());
+                String aggregate = aggregate();
+                lex.eatDelim('(');
+                field = field();
+                lex.eatDelim(')');
+                aggregates.add(getAggregateFn(aggregate, field));
             } else {
-                fields.add(field());
+                field = field();
             }
+            fields.add(field);
+
             if (!lex.matchDelim(','))
                 break;
             lex.eatDelim(',');
         }
-//        if (lex.matchAggregate()) {
-//            aggregates = aggregateList();
-//        } else {
-//            fields = selectList();
-//        }
+
         lex.eatKeyword("from");
         Collection<String> tables = tableList();
         Predicate pred = new Predicate();
@@ -117,12 +120,7 @@ public class Parser {
         return list;
     }
 
-    private AggregationFn getAggregateFn() {
-        String aggregate = aggregate();
-        lex.eatDelim('(');
-        String field = field();
-        lex.eatDelim(')');
-
+    private AggregationFn getAggregateFn(String aggregate, String field) {
         AggregationFn aggr = null;
         switch (aggregate.toLowerCase()) {
             case "avg": {
@@ -149,44 +147,6 @@ public class Parser {
 
         return aggr;
     }
-
-//    private List<AggregationFn> aggregateList() {
-//        List<AggregationFn> list = new ArrayList<>();
-//        String aggregate = aggregate();
-//        lex.eatDelim('(');
-//        String field = field();
-//        lex.eatDelim(')');
-//
-//        AggregationFn aggr = null;
-//        switch (aggregate.toLowerCase()) {
-//            case "avg": {
-//                aggr = new AvgFn(field);
-//                break;
-//            }
-//            case "count": {
-//                aggr = new CountFn(field);
-//                break;
-//            }
-//            case "max": {
-//                aggr = new MaxFn(field);
-//                break;
-//            }
-//            case "min": {
-//                aggr = new MinFn(field);
-//                break;
-//            }
-//            case "sum": {
-//                aggr = new SumFn(field);
-//                break;
-//            }
-//        }
-//        list.add(aggr);
-//        if (lex.matchDelim(',')) {
-//            lex.eatDelim(',');
-//            list.addAll(aggregateList());
-//        }
-//        return list;
-//    }
 
     private Map<String, Boolean> orderByList() {
         Map<String, Boolean> orderByFields = new HashMap<String, Boolean>();

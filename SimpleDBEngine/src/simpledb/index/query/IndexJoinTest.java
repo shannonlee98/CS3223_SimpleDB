@@ -9,7 +9,6 @@ import simpledb.plan.*;
 import simpledb.query.*;
 import simpledb.index.*;
 import simpledb.index.planner.IndexJoinPlan;
-import simpledb.materialize.HashJoinPlan;
 
 // Find the grades of all students.
 
@@ -65,17 +64,6 @@ public class IndexJoinTest {
 
 		while (s.next()) {
 			System.out.println(s.getString("sname") + " " + s.getString("grade"));
-		}
-		s.close();
-	}
-
-	private static void useBlockScan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
-		// Open an index join scan on the table.
-		Plan blockplan = new HashJoinPlan(tx, p1, p2, joinfield1, joinfield2);
-		Scan s = blockplan.open();
-
-		while (s.next()) {
-			System.out.println(s.getString("grade"));
 		}
 		s.close();
 	}

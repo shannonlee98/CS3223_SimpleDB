@@ -59,7 +59,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       //Step 6: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
-         System.out.println("group plan activated");
          p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates());
       }
 

@@ -1,10 +1,13 @@
-package simpledb.materialize;
+package simpledb.hash;
 
+import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
 import simpledb.record.Schema;
-import simpledb.record.TableScan;
 import simpledb.tx.Transaction;
+
+import java.util.*;
 
 /**
  * The Plan class corresponding to the <i>indexjoin</i>
@@ -13,11 +16,12 @@ import simpledb.tx.Transaction;
  * @author Edward Sciore
  */
 public class HashJoinPlan implements Plan {
-   private Plan outer, inner;
+   private Plan p1, p2;
    private Transaction tx;
    private String joinfield1;
    private String joinfield2;
    private Schema sch = new Schema();
+   private int partitions;
 
    /**
     * Implements the join operator,
@@ -30,23 +34,17 @@ public class HashJoinPlan implements Plan {
     * @param joinfield2 the right-hand field used for joining
     */
    public HashJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
-      int records1 = p1.recordsOutput();
-      int records2 = p2.recordsOutput();
+      this.p1 = p1;
+      this.p2 = p2;
 
-      if (records1 < records2) {
-         inner = p2;
-         outer = p1;
-         this.joinfield1 = joinfield1;
-         this.joinfield2 = joinfield2;
-      } else {
-         inner = p1;
-         outer = p2;
-         this.joinfield1 = joinfield2;
-         this.joinfield2 = joinfield1;
-      }
-      this.tx = tx;
+      this.joinfield1 = joinfield1;
+      this.joinfield2 = joinfield2;
+
+      partitions = Math.max(tx.availableBuffs() - 1, 1);
+
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());
+      this.tx = tx;
    }
 
    /**
@@ -55,11 +53,21 @@ public class HashJoinPlan implements Plan {
     * @see Plan#open()
     */
    public Scan open() {
-      TableScan tsOuter = (TableScan) outer.open();
-      TableScan tsInner = (TableScan) inner.open();
+      ArrayList<Plan> partitions1 = partition(p1, joinfield1);
+      ArrayList<Plan> partitions2 = partition(p2, joinfield2);
+      //join the values by hashtable.
+      return new HashJoinScan(partitions1, joinfield1, partitions2,
+              joinfield2, partitions, p1.schema().fields());
+   }
 
-      // throws an exception if p1 is not a tableplan
-      return new HashJoinScan(tx, tsOuter, joinfield1, tsInner, joinfield2);
+   private ArrayList<Plan> partition(Plan p, String joinfield) {
+      ArrayList<Plan> partitionList = new ArrayList<>();
+
+      for (int i = 0; i < partitions; i ++) {
+         partitionList.add(new HashPartitionPlan(tx, p, partitions, joinfield, i));
+      }
+
+      return partitionList;
    }
 
    /**
@@ -71,8 +79,8 @@ public class HashJoinPlan implements Plan {
     * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
-      return outer.recordsOutput()
-              + (outer.blocksAccessed() * inner.recordsOutput());
+      //include the partition cost also
+      return p1.blocksAccessed() * 3 + p2.blocksAccessed() * 3;
    }
 
    /**
@@ -83,7 +91,7 @@ public class HashJoinPlan implements Plan {
     * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
-      return outer.recordsOutput() * inner.recordsOutput();
+      return p1.recordsOutput() * p2.recordsOutput();
    }
 
    /**
@@ -93,10 +101,10 @@ public class HashJoinPlan implements Plan {
     * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
-      if (outer.schema().hasField(fldname))
-         return outer.distinctValues(fldname);
+      if (p1.schema().hasField(fldname))
+         return p1.distinctValues(fldname);
       else
-         return inner.distinctValues(fldname);
+         return p2.distinctValues(fldname);
    }
 
    /**

@@ -102,7 +102,6 @@ public class SortScan implements Scan {
     * @see simpledb.query.Scan#getVal(java.lang.String)
     */
    public Constant getVal(String fldname) {
-      System.out.println("LOOK HERE ........................");
       return currentscan.getVal(fldname);
    }
    

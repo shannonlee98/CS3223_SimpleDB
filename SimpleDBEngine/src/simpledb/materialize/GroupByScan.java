@@ -19,7 +19,7 @@ public class GroupByScan implements Scan {
     * Create a groupby scan, given a grouped table scan.
     * @param s the grouped scan
     * @param groupfields the group fields
-    * @param aggfns the aggregation functions
+    * @param aggfns the aggregation functions  (-all-)
     */
    public GroupByScan(Scan s, List<String> groupfields, List<AggregationFn> aggfns) {
       this.s = s;
@@ -55,8 +55,9 @@ public class GroupByScan implements Scan {
    public boolean next() {
       if (!moregroups)
          return false;
-      for (AggregationFn fn : aggfns)
+      for (AggregationFn fn : aggfns) {
          fn.processFirst(s);
+      }
       groupval = new GroupValue(s, groupfields);
       while(moregroups = s.next()) {
          GroupValue gv = new GroupValue(s, groupfields);

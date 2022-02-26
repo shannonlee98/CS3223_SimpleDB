@@ -23,15 +23,13 @@ public class QueryData {
     */
    public QueryData(List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
                     Map<String, Boolean> orderByFields, List<String> groupByFields) {
+      fields.addAll(groupByFields);
       this.fields = fields;
       this.aggregates = aggregates;
       this.tables = tables;
       this.pred = pred;
       this.orderByFields = orderByFields;
       this.groupByFields = groupByFields;
-      System.out.println(Arrays.toString(fields.toArray()));
-      System.out.println(Arrays.toString(aggregates.toArray()));
-      System.out.println(Arrays.toString(groupByFields.toArray()));
    }
    
    /**

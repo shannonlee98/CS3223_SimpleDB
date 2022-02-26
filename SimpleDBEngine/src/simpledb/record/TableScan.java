@@ -55,8 +55,6 @@ public class TableScan implements UpdateScan {
    }
 
    public Constant getVal(String fldname) {
-      System.out.println(fldname);
-      System.out.println(Arrays.toString(layout.schema().fields().toArray()));
       if (layout.schema().type(fldname) == INTEGER)
          return new Constant(getInt(fldname));
       else

@@ -76,7 +76,7 @@ public class MergeJoinTest {
 
 	private static void useMergeScan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
 		// Open an index join scan on the table.
-		Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, joinfield2);
+		Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, joinfield2, false);
 		Scan s = mergeplan.open();
 
 		while (s.next()) {

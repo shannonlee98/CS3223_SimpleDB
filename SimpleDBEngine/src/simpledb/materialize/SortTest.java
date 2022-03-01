@@ -1,11 +1,14 @@
-package test;
-import simpledb.plan.Plan;
-import simpledb.query.Scan;
-import simpledb.tx.Transaction;
-import simpledb.plan.Planner;
-import simpledb.server.SimpleDB;
+package simpledb.materialize;
 
-public class Tester {
+import simpledb.plan.Plan;
+import simpledb.plan.Planner;
+import simpledb.query.Scan;
+import simpledb.server.SimpleDB;
+import simpledb.tx.Transaction;
+
+import java.sql.Types;
+
+public class SortTest {
    public static void main(String[] args) {
       try {
     	 // analogous to the driver
@@ -16,10 +19,7 @@ public class Tester {
 		 Planner planner = db.planner();
 
          // analogous to the statement
-         String qry = "select SName, majorid from STUDENT";
-//                    + "set MajorId=10 "
-//                    + "where SName > 'art'";
-//
+         String qry = "select SName, majorid from STUDENT order by majorid desc, sname asc";
          Plan p = planner.createQueryPlan(qry, tx);
 
          // analogous to the result set
@@ -28,19 +28,9 @@ public class Tester {
          System.out.println("Name\tMajor");
          while (s.next()) {
              String sname = s.getString("sname"); //SimpleDB stores field names
-             int dname = s.getInt("majorid"); //in lower case
-             System.out.println(sname + "\t" + dname);
+             int majorid = s.getInt("majorid"); //in lower case
+             System.out.println(sname + "\t\t" + majorid);
          }
-		 
-//		 String qry = "create index majoridx "
-//				 	+ "on STUDENT(MajorID) using hash";
-//         int p = planner.executeUpdate(qry, tx);
-         
-//         if (p > 0) {
-//        	 System.out.println("Something changed. Rows affected:" + p);
-//         } else {
-//        	 System.out.println("Nothing changed. Rows affected:" + p);
-//         }
          s.close();
          tx.commit();
          

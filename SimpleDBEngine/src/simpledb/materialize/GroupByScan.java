@@ -130,5 +130,9 @@ public class GroupByScan implements Scan {
          return true;
       return false;
    }
+
+   public List<AggregationFn> getAggFns() {
+      return aggfns;
+   }
 }
 

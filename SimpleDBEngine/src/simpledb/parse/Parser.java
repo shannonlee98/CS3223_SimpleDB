@@ -67,6 +67,7 @@ public class Parser {
 
     public QueryData query() {
         lex.eatKeyword("select");
+        boolean isDistinct = distinct();
         List<String> fields = new ArrayList<>();
         List<AggregationFn> aggregates = new ArrayList<>();
 
@@ -95,7 +96,7 @@ public class Parser {
             lex.eatKeyword("where");
             pred = predicate();
         }
-        Map<String, Boolean> orderByFields = new HashMap<>();
+        LinkedHashMap<String, Boolean> orderByFields = new LinkedHashMap<>();
         if (lex.matchKeyword("order")) {
             lex.eatKeyword("order");
             lex.eatKeyword("by");
@@ -107,7 +108,16 @@ public class Parser {
             lex.eatKeyword("by");
             groupByFields = groupByList();
         }
-        return new QueryData(fields, aggregates, tables, pred, orderByFields, groupByFields);
+        System.out.println(isDistinct);
+        return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
+    }
+
+    private boolean distinct() {
+        if (lex.matchKeyword("distinct")) {
+            lex.eatKeyword("distinct");
+            return true;
+        }
+        return false;
     }
 
     private List<String> selectList() {
@@ -148,10 +158,10 @@ public class Parser {
         return aggr;
     }
 
-    private Map<String, Boolean> orderByList() {
-        Map<String, Boolean> orderByFields = new HashMap<String, Boolean>();
+    private LinkedHashMap<String, Boolean> orderByList() {
+        LinkedHashMap<String, Boolean> orderByFields = new LinkedHashMap<>();
         String field = field();
-        Boolean isAsc = true;
+        boolean isAsc = true;
         if (lex.matchKeyword("asc")) {
             lex.eatKeyword("asc");
         } else if (lex.matchKeyword("desc")) {

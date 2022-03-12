@@ -1,14 +1,13 @@
 package simpledb.hash;
 
-import simpledb.plan.Plan;
+import simpledb.materialize.TempTable;
 import simpledb.query.Constant;
 import simpledb.query.Scan;
-import simpledb.query.UpdateScan;
-import simpledb.record.RID;
-import simpledb.record.TableScan;
-import simpledb.tx.Transaction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The scan class corresponding to the indexjoin relational
@@ -19,21 +18,21 @@ import java.util.*;
  *
  * @author Edward Sciore
  */
-public class HashJoinScan implements Scan {
+public class GraceHashJoinScan implements Scan {
     private String joinfield1;
     private String joinfield2;
 
     private int partitions;
-    private ArrayList<Plan> partitions1;
-    private ArrayList<Plan> partitions2;
+    private List<TempTable> partitions1;
+    private List<TempTable> partitions2;
 
     private Scan s2;
 
-    private List<String> s1fields;
     private int currentParition;
     boolean allPartitionsClosed;
+    private int keyIterator = 0;
 
-    private Map<Constant, Map<String, Constant>> hashTable;
+    private Map<Constant, ArrayList<Map<String, Constant>>> hashTable;
     //there is a successful match but how can we find the
     //scan in s1.
 
@@ -57,17 +56,15 @@ public class HashJoinScan implements Scan {
      * @param joinfield1  the field from the first table used for joining
      * @param partitions2 the second plan's partitions
      * @param joinfield2  the field from the second table used for joining
-     * @param partitions  number of partitions for the hashJoin
      */
-    public HashJoinScan(ArrayList<Plan> partitions1,
-                        String joinfield1, ArrayList<Plan> partitions2,
-                        String joinfield2, int partitions, List<String> s1fields) {
+    public GraceHashJoinScan(List<TempTable> partitions1,
+                             String joinfield1, List<TempTable> partitions2,
+                             String joinfield2) {
         this.joinfield1 = joinfield1;
         this.joinfield2 = joinfield2;
-        this.partitions = partitions;
+        this.partitions = partitions1.size();
         this.partitions1 = partitions1;
         this.partitions2 = partitions2;
-        this.s1fields = s1fields;
 
         beforeFirst();
     }
@@ -89,14 +86,24 @@ public class HashJoinScan implements Scan {
         s1.beforeFirst();
         s2 = partitions2.get(currentParition).open();
         s2.beforeFirst();
+        if (!s2.next()) {
+            return nextPartition();
+        }
+
+        keyIterator = 0;
 
         //initialise hashtable
         hashTable = new HashMap<>();
         while (s1.next()) {
-            hashTable.put(s1.getVal(joinfield1), new HashMap<>());
-            for (String field : s1fields) {
-                hashTable.get(s1.getVal(joinfield1)).put(field, s1.getVal(field));
+            if (!hashTable.containsKey(s1.getVal(joinfield1))) {
+                hashTable.put(s1.getVal(joinfield1), new ArrayList<>());
             }
+
+            Map<String, Constant> row = new HashMap<>();
+            for (String field : partitions1.get(0).getLayout().schema().fields()) {
+                row.put(field, s1.getVal(field));
+            }
+            hashTable.get(s1.getVal(joinfield1)).add(row);
         }
         s1.close();
 
@@ -128,8 +135,17 @@ public class HashJoinScan implements Scan {
 
     public boolean next() {
         while (true) {
+            //first check if there are duplicate key values in our hashtable
+            if (hashTable.keySet().contains(s2.getVal(joinfield2)) &&
+                    keyIterator < hashTable.get(s2.getVal(joinfield2)).size()) {
+                keyIterator++;
+                return true;
+            }
             while (s2.next()) {
-                if (hashTable.keySet().contains(s2.getVal(joinfield2))) return true;
+                if (hashTable.keySet().contains(s2.getVal(joinfield2))) {
+                    keyIterator = 1;
+                    return true;
+                }
             }
 
             if (!nextPartition()) return false;
@@ -145,7 +161,8 @@ public class HashJoinScan implements Scan {
         if (s2.hasField(fldname))
             return s2.getInt(fldname);
         else {
-            return hashTable.get(s2.getVal(joinfield2)).get(fldname).asInt();
+            return hashTable.get(s2.getVal(joinfield2))
+                    .get(keyIterator - 1).get(fldname).asInt();
         }
     }
 
@@ -158,7 +175,7 @@ public class HashJoinScan implements Scan {
         if (s2.hasField(fldname))
             return s2.getVal(fldname);
         else {
-            return hashTable.get(s2.getVal(joinfield2)).get(fldname);
+            return hashTable.get(s2.getVal(joinfield2)).get(keyIterator - 1).get(fldname);
         }
     }
 
@@ -171,7 +188,8 @@ public class HashJoinScan implements Scan {
         if (s2.hasField(fldname))
             return s2.getString(fldname);
         else {
-            return hashTable.get(s2.getVal(joinfield2)).get(fldname).asString();
+            return hashTable.get(s2.getVal(joinfield2)).
+                    get(keyIterator - 1).get(fldname).asString();
         }
     }
 
@@ -182,7 +200,8 @@ public class HashJoinScan implements Scan {
      */
     public boolean hasField(String fldname) {
         return s2.hasField(fldname) ||
-                hashTable.get(s2.getVal(joinfield2)).keySet().contains(fldname);
+                hashTable.get(s2.getVal(joinfield2)).
+                        get(keyIterator - 1).keySet().contains(fldname);
     }
 
     /**

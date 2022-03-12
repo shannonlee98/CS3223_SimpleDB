@@ -2,7 +2,8 @@ package simpledb.opt;
 
 import java.util.Map;
 
-import simpledb.materialize.BlockJoinPlan;
+import simpledb.hash.GraceHashJoinPlan;
+import simpledb.multibuffer.NestedBlockJoinPlan;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
@@ -71,6 +72,12 @@ class TablePlanner {
       Plan p = makeBlockJoin(current, currsch);
       int cost = p.blocksAccessed();
 
+      Plan hashPlan = makeHashJoin(current, currsch);
+      if (hashPlan.blocksAccessed() < cost) {
+         p = hashPlan;
+         cost = hashPlan.blocksAccessed();
+      }
+
       Plan mergePlan = makeMergeJoin(current, currsch);
       if (mergePlan.blocksAccessed() < cost) {
          p = mergePlan;
@@ -118,7 +125,19 @@ class TablePlanner {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new BlockJoinPlan(tx, current, myplan, outerfield, fldname);
+            Plan p = new NestedBlockJoinPlan(tx, current, myplan, outerfield, fldname);
+            p = addSelectPred(p);
+            return addJoinPred(p, currsch);
+         }
+      }
+      return null;
+   }
+
+   private Plan makeHashJoin(Plan current, Schema currsch) {
+      for (String fldname : indexes.keySet()) {
+         String outerfield = mypred.equatesWithField(fldname);
+         if (outerfield != null && currsch.hasField(outerfield)) {
+            Plan p = new GraceHashJoinPlan(tx, current, myplan, outerfield, fldname);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }

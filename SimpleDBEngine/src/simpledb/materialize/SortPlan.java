@@ -15,6 +15,7 @@ public class SortPlan implements Plan {
    private Plan p;
    private Schema sch;
    private RecordComparator comp;
+   private boolean isDistinct;
 
    /**
     * Create a sort plan for the specified query.
@@ -22,11 +23,12 @@ public class SortPlan implements Plan {
     * @param sortfields the fields to sort by
     * @param tx the calling transaction
     */
-   public SortPlan(Transaction tx, Plan p, Map<String, Boolean> sortfields) {
+   public SortPlan(Transaction tx, Plan p, LinkedHashMap<String, Boolean> sortfields, boolean isDistinct) {
       this.tx = tx;
       this.p = p;
-      sch = p.schema();
-      comp = new RecordComparator(sortfields);
+      this.sch = p.schema();
+      this.comp = new RecordComparator(sortfields);
+      this.isDistinct = isDistinct;
    }
    
    /**

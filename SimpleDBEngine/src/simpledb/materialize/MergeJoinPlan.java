@@ -26,12 +26,12 @@ public class MergeJoinPlan implements Plan {
     * @param fldname2 the RHS join field
     * @param tx the calling transaction
     */
-   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String fldname2) {
+   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String fldname2, boolean isDistinct) {
       this.fldname1 = fldname1;
-      Map<String, Boolean> sortlist1 = new HashMap<>(){{
+      LinkedHashMap<String, Boolean> sortlist1 = new LinkedHashMap<>(){{
          put(fldname1, true);
       }};
-      this.p1 = new SortPlan(tx, p1, sortlist1);
+      this.p1 = new SortPlan(tx, p1, sortlist1, isDistinct);
 
 
 //       Original code
@@ -39,10 +39,10 @@ public class MergeJoinPlan implements Plan {
 //      this.p1 = new SortPlan(tx, p1, sortlist1);
       
       this.fldname2 = fldname2;
-      Map<String, Boolean> sortlist2 = new HashMap<>(){{
+      LinkedHashMap<String, Boolean> sortlist2 = new LinkedHashMap<>(){{
          put(fldname2, true);
       }};
-      this.p2 = new SortPlan(tx, p2, sortlist2);
+      this.p2 = new SortPlan(tx, p2, sortlist2, isDistinct);
       
       sch.addAll(this.p1.schema());
       sch.addAll(this.p2.schema());

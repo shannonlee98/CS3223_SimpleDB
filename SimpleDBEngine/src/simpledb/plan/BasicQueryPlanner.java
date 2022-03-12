@@ -49,12 +49,12 @@ public class BasicQueryPlanner implements QueryPlanner {
 
       //Step 5: Add a sort plan if ordered
       if (data.orderByFields().size() > 0) {
-          p = new SortPlan(tx, p, data.orderByFields());
+          p = new SortPlan(tx, p, data.orderByFields(), data.isDistinct());
        }
 
       //Step 6: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
-         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates());
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates(), data.isDistinct());
       }
 
       return p;

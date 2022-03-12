@@ -21,8 +21,8 @@ import java.util.Map;
 public class BlockJoinTest {
 	public static void main(String[] args) {
 		SimpleDB db = new SimpleDB("studentdb");
-      MetadataMgr mdm = db.mdMgr();
-      Transaction tx = db.newTx();
+		MetadataMgr mdm = db.mdMgr();
+		Transaction tx = db.newTx();
 
 		// Find the index on StudentId.
 		Map<String,IndexInfo> indexes = mdm.getIndexInfo("enroll", tx);

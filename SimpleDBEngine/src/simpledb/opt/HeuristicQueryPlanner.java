@@ -2,6 +2,7 @@ package simpledb.opt;
 
 import java.util.*;
 
+import simpledb.materialize.DistinctPlan;
 import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
 import simpledb.tx.Transaction;
@@ -33,7 +34,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
-         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
+         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm, data.isDistinct());
          tableplanners.add(tp);
       }
       
@@ -52,14 +53,19 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4.  Project on the field names and return
       Plan p = new ProjectPlan(currentplan, data.fields());
 
-      //Step 5: Add a sort plan if ordered
-      if (data.orderByFields().size() > 0) {
-         p = new SortPlan(tx, p, data.orderByFields());
+      // Step 5: Add a distinct plan if isDistinct is true
+      if (data.isDistinct()) {
+         p = new DistinctPlan(tx, p, data.fields());
       }
 
-      //Step 6: Add a group plan if there is aggregation or 'group by'
+      // Step 6: Add a sort plan if ordered
+      if (data.orderByFields().size() > 0) {
+         p = new SortPlan(tx, p, data.orderByFields(), data.isDistinct());
+      }
+
+      // Step 7: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
-         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates());
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates(), data.isDistinct());
       }
 
       return p;

@@ -10,20 +10,22 @@ import simpledb.materialize.AggregationFn;
  * @author Edward Sciore
  */
 public class QueryData {
+   private boolean isDistinct;
    private List<String> fields;
    private List<AggregationFn> aggregates;
    private Collection<String> tables;
    private Predicate pred;
-   private Map<String, Boolean> orderByFields;
+   private LinkedHashMap<String, Boolean> orderByFields;
    private List<String> groupByFields;
 
 
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
-                    Map<String, Boolean> orderByFields, List<String> groupByFields) {
+   public QueryData(boolean isDistinct, List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
+                    LinkedHashMap<String, Boolean> orderByFields, List<String> groupByFields) {
       fields.addAll(groupByFields);
+      this.isDistinct = isDistinct;
       this.fields = fields;
       this.aggregates = aggregates;
       this.tables = tables;
@@ -31,6 +33,8 @@ public class QueryData {
       this.orderByFields = orderByFields;
       this.groupByFields = groupByFields;
    }
+
+   public boolean isDistinct() { return isDistinct; }
    
    /**
     * Returns the fields mentioned in the select clause.
@@ -44,7 +48,7 @@ public class QueryData {
     * Returns the aggregates mentioned in the select clause.
     * @return a list of pairs containing aggregate and field names
     */
-   public List<AggregationFn> aggregates() {return aggregates; }
+   public List<AggregationFn> aggregates() { return aggregates; }
 
    /**
     * Returns the tables mentioned in the from clause.
@@ -63,7 +67,7 @@ public class QueryData {
       return pred;
    }
 
-   public Map<String, Boolean> orderByFields() {
+   public LinkedHashMap<String, Boolean> orderByFields() {
       return orderByFields;
    }
 

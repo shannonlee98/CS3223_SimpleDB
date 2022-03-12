@@ -23,6 +23,7 @@ class TablePlanner {
    private Schema myschema;
    private Map<String,IndexInfo> indexes;
    private Transaction tx;
+   private boolean isDistinct;
    
    /**
     * Creates a new table planner.
@@ -34,12 +35,13 @@ class TablePlanner {
     * @param mypred the query predicate
     * @param tx the calling transaction
     */
-   public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm) {
+   public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm, boolean isDistinct) {
       this.mypred  = mypred;
       this.tx  = tx;
       myplan   = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
       indexes  = mdm.getIndexInfo(tblname, tx);
+      this.isDistinct = isDistinct;
    }
    
    /**
@@ -149,7 +151,7 @@ class TablePlanner {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname);
+            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname, isDistinct);
             p = addSelectPred(p);
             return addJoinPred(p, currsch);
          }

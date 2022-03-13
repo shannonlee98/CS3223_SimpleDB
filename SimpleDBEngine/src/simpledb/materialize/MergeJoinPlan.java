@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.plan.Plan;
 import simpledb.query.*;
@@ -106,6 +108,11 @@ public class MergeJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+
+   public ExecutionChain GetEC() {
+      return new Join(this, p1.GetEC(), p2.GetEC(), fldname1, fldname2);
    }
 }
 

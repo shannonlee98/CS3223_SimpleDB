@@ -1,5 +1,8 @@
 package simpledb.hash;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
+import simpledb.materialize.MaterializePlan;
 import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
@@ -117,8 +120,15 @@ public class GraceHashJoinPlan implements Plan {
      * @see Plan#blocksAccessed()
      */
     public int blocksAccessed() {
-        return smaller.blocksAccessed() + larger.blocksAccessed() +
-                2 * (smaller.blocksAccessed() + larger.blocksAccessed()) * estimatedPartitionMultiplier;
+        Plan mpSmaller = new MaterializePlan(tx, smaller); // not opened; just for analysis
+        Plan mpLarger = new MaterializePlan(tx, larger); // not opened; just for analysis
+
+        int carryoverCost = Math.max(smaller.blocksAccessed() +
+                larger.blocksAccessed() - mpSmaller.blocksAccessed() - mpLarger.blocksAccessed(), 0);
+
+        return mpSmaller.blocksAccessed() + mpLarger.blocksAccessed() +
+                2 * (mpSmaller.blocksAccessed() + mpLarger.blocksAccessed()) * estimatedPartitionMultiplier +
+                carryoverCost;
     }
 
     /**
@@ -181,5 +191,9 @@ public class GraceHashJoinPlan implements Plan {
 
         src.close();
         return ttList;
+    }
+
+    public ExecutionChain GetEC() {
+        return new Join(this, smaller.GetEC(), larger.GetEC(), joinfieldSmaller, joinfieldLarger);
     }
 }

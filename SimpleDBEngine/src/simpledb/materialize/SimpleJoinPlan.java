@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
@@ -92,5 +94,9 @@ public class SimpleJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public ExecutionChain GetEC() {
+      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield1, joinfield2);
    }
 }

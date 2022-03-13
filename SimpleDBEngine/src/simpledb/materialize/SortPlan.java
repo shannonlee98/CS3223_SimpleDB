@@ -1,6 +1,9 @@
 package simpledb.materialize;
 
 import java.util.*;
+
+import simpledb.display.ExecutionChain;
+import simpledb.display.Sort;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.plan.Plan;
@@ -41,7 +44,7 @@ public class SortPlan implements Plan {
       Scan src = p.open();
       List<TempTable> runs = splitIntoRuns(src);
       src.close();
-      while (runs.size() > 2)
+      while (runs.size() >= 2) //changed to >=2 from >2
          runs = doAMergeIteration(runs);
       return new SortScan(runs, comp);
    }
@@ -57,7 +60,15 @@ public class SortPlan implements Plan {
    public int blocksAccessed() {
       // does not include the one-time cost of sorting
       Plan mp = new MaterializePlan(tx, p); // not opened; just for analysis
-      return mp.blocksAccessed();
+      //algo seems to be doing replacement selection algorithm, them merge in twos.
+      //replacement selection cost = 2 passes
+      //merge in pairs cost = ceil(log_2(Number of runs))
+      //avg number of runs = recordsOutput/2
+      int carryoverCost = Math.max(p.blocksAccessed() - mp.blocksAccessed(), 0);
+
+      return mp.blocksAccessed() * 2 +
+              (int) Math.ceil(Math.log(Math.ceil(mp.recordsOutput() * 1.0 / 2)) / Math.log(2))+
+              carryoverCost;
    }
    
    /**
@@ -87,7 +98,11 @@ public class SortPlan implements Plan {
    public Schema schema() {
       return sch;
    }
-   
+
+   public ExecutionChain GetEC() {
+      return new Sort(this, p.GetEC(), comp.fields);
+   }
+
    private List<TempTable> splitIntoRuns(Scan src) {
       List<TempTable> temps = new ArrayList<>();
       src.beforeFirst();
@@ -98,7 +113,7 @@ public class SortPlan implements Plan {
       UpdateScan currentscan = currenttemp.open();
       while (copy(src, currentscan))
          if (comp.compare(src, currentscan) < 0) {
-         // start a new run
+         // start a new run everytime the order is wrong. average case generating record number of runs/2
          currentscan.close();
          currenttemp = new TempTable(tx, sch);
          temps.add(currenttemp);

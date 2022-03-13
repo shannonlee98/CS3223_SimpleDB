@@ -1,5 +1,7 @@
 package simpledb.multibuffer;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
 import simpledb.materialize.MaterializePlan;
 import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
@@ -13,7 +15,7 @@ import simpledb.tx.Transaction;
  * <i>product</i> operator.
  * @author Edward Sciore
  */
-public class NestedBlockJoinPlan implements Plan {
+public class BlockJoinPlan implements Plan {
    private Transaction tx;
    private Plan inner, outer;
    private Schema schema = new Schema();
@@ -25,7 +27,7 @@ public class NestedBlockJoinPlan implements Plan {
     * @param p2 the plan for the RHS query
     * @param tx the calling transaction
     */
-   public NestedBlockJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
+   public BlockJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
       this.tx = tx;
       int records1 = p1.recordsOutput();
       int records2 = p2.recordsOutput();
@@ -63,7 +65,7 @@ public class NestedBlockJoinPlan implements Plan {
    public Scan open() {
       Scan innerscan = inner.open();
       TempTable tt = copyRecordsFrom(outer);
-      return new NestedBlockJoinScan(tx, innerscan, tt.tableName(), tt.getLayout(), joinfieldOuter, joinfieldInner);
+      return new BlockJoinScan(tx, innerscan, tt.tableName(), tt.getLayout(), joinfieldOuter, joinfieldInner);
    }
 
    /**
@@ -78,11 +80,17 @@ public class NestedBlockJoinPlan implements Plan {
     */
    public int blocksAccessed() {
       // this guesses at the # of chunks
+      Plan mpInner = new MaterializePlan(tx, inner); // not opened; just for analysis
+      Plan mpOuter = new MaterializePlan(tx, outer); // not opened; just for analysis
+
       int avail = tx.availableBuffs() - 2;
-      int size = outer.blocksAccessed();
-      int numchunks = size / avail;
-      return (int) (outer.blocksAccessed() +
-                  Math.ceil(outer.blocksAccessed() * 1.0 / numchunks) * inner.blocksAccessed());
+      int size = mpOuter.blocksAccessed();
+      int numchunks = (int)Math.ceil(size * 1.0 / avail);
+
+      int carryoverCost = Math.max(inner.blocksAccessed() +
+              outer.blocksAccessed() - mpOuter.blocksAccessed() - mpInner.blocksAccessed(), 0);
+
+      return size + numchunks * mpInner.blocksAccessed() + carryoverCost;
    }
 
    /**
@@ -130,5 +138,9 @@ public class NestedBlockJoinPlan implements Plan {
       src.close();
       dest.close();
       return t;
+   }
+
+   public ExecutionChain GetEC() {
+      return new Join(this, outer.GetEC(), inner.GetEC(), joinfieldOuter, joinfieldInner);
    }
 }

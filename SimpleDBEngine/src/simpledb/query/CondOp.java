@@ -4,8 +4,8 @@ import simpledb.parse.BadSyntaxException;
 
 /**
  * The interface corresponding to SQL conditional operators.
- * @author ZhengWen
  *
+ * @author ZhengWen
  */
 public class CondOp {
     public enum types {
@@ -29,6 +29,7 @@ public class CondOp {
 
     /**
      * Throws an exception if the string is not a valid conditional operator.
+     *
      * @param s the conditional operator in string format.
      * @return the conditional operator as condOps enum.
      */
@@ -47,6 +48,26 @@ public class CondOp {
             case "<>":
             case "!=":
                 return types.notEquals;
+            default:
+                throw new BadSyntaxException();
+        }
+    }
+
+    @Override
+    public String toString() {
+        switch (val) {
+            case equals:
+                return "=";
+            case lessThan:
+                return "<";
+            case lessThanOrEquals:
+                return "<=";
+            case moreThan:
+                return ">";
+            case moreThanOrEquals:
+                return ">=";
+            case notEquals:
+                return "!=";
             default:
                 throw new BadSyntaxException();
         }

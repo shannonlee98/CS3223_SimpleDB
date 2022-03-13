@@ -1,6 +1,10 @@
 package simpledb.materialize;
 
 import java.util.*;
+
+import simpledb.display.ExecutionChain;
+import simpledb.display.Group;
+import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.record.Schema;
 import simpledb.plan.Plan;
@@ -101,5 +105,9 @@ public class GroupByPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public ExecutionChain GetEC() {
+      return new Group(this, p.GetEC(), groupfields, aggfns);
    }
 }

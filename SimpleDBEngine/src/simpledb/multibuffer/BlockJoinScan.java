@@ -10,7 +10,7 @@ import simpledb.tx.Transaction;
  * <i>product</i> operator.
  * @author Edward Sciore
  */
-public class NestedBlockJoinScan implements Scan {
+public class BlockJoinScan implements Scan {
    private Transaction tx;
    private Scan inner, outer =null;
    private String filename, joinfieldOuter, joinfieldInner;
@@ -24,8 +24,8 @@ public class NestedBlockJoinScan implements Scan {
     * @param layout the metadata for the RHS table
     * @param tx the current transaction
     */
-   public NestedBlockJoinScan(Transaction tx, Scan innerscan, String tblname, Layout layout,
-                              String joinfieldOuter, String joinfieldInner) {
+   public BlockJoinScan(Transaction tx, Scan innerscan, String tblname, Layout layout,
+                        String joinfieldOuter, String joinfieldInner) {
       this.tx = tx;
       this.inner = innerscan;
       this.filename = tblname + ".tbl";

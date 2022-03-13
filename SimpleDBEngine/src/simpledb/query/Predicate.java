@@ -36,6 +36,15 @@ public class Predicate {
    }
 
    /**
+    * Modifies the predicate to be the set difference of
+    * itself and the specified predicate.
+    * @param pred the other predicate
+    */
+   public void differenceWith(Predicate pred) {
+      terms.removeAll(pred.terms);
+   }
+
+   /**
     * Returns true if the predicate evaluates to true
     * with respect to the specified scan.
     * @param s the scan
@@ -135,6 +144,25 @@ public class Predicate {
             return s;
       }
       return null;
+   }
+
+   /**
+    * Determine if there is a term of the form "F1XF2"
+    * where F1 is the specified field and F2 is another field.
+    * If so, the method returns the name of that field.
+    * If not, the method returns null.
+    * @param f1 the name of one the field
+    * @param f2 the name of the other field
+    * @return the name of the other field, or null
+    */
+   public Predicate relationBetweenField(String f1, String f2) {
+      Predicate result = new Predicate();
+      for (Term t : terms) {
+         if (t.relationBetweenField(f1, f2)) {
+            result.terms.add(t);
+         }
+      }
+      return result;
    }
 
    public String toString() {

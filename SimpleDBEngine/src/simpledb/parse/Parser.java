@@ -108,7 +108,7 @@ public class Parser {
             lex.eatKeyword("by");
             groupByFields = groupByList();
         }
-        System.out.println(isDistinct);
+//        System.out.println(isDistinct);
         return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
     }
 

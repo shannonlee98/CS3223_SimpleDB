@@ -1,5 +1,6 @@
 package simpledb.plan;
 
+import simpledb.display.ExecutionChain;
 import simpledb.query.Scan;
 import simpledb.record.*;
 
@@ -45,4 +46,6 @@ public interface Plan {
     * @return the query's schema
     */
    public Schema schema();
+
+   public ExecutionChain GetEC();
 }

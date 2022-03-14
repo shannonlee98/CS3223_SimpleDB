@@ -4,6 +4,7 @@ import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.plan.Plan;
 import simpledb.plan.TablePlan;
+import simpledb.query.CondOp;
 import simpledb.query.Scan;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
@@ -34,7 +35,7 @@ public class HashJoinTest {
 
 	private static void useHashScan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
 		// Open an index join scan on the table.
-		Plan blockplan = new HashJoinPlan(tx, p1, p2, joinfield1, joinfield2);
+		Plan blockplan = new GraceHashJoinPlan(tx, p1, p2, joinfield1, joinfield2);
 		Scan s = blockplan.open();
 
 		while (s.next()) {

@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.controller.Setting;
 import simpledb.query.*;
 import simpledb.record.*;
 import simpledb.materialize.*;
@@ -63,6 +64,12 @@ public class Parser {
         return pred;
     }
 
+    //set some stuff in simple ij
+    public void setting() {
+        lex.eatKeyword("setting");
+        Setting.getInstance().setJoinMode(lex.eatStringConstant());
+    }
+
 // Methods for parsing queries
 
     public QueryData query() {
@@ -108,7 +115,7 @@ public class Parser {
             lex.eatKeyword("by");
             groupByFields = groupByList();
         }
-        System.out.println(isDistinct);
+//        System.out.println(isDistinct);
         return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
     }
 

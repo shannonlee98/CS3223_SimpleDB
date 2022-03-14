@@ -2,34 +2,57 @@ package simpledb.multibuffer;
 
 import simpledb.display.ExecutionChain;
 import simpledb.display.Join;
-import simpledb.tx.Transaction;
-import simpledb.record.*;
-import simpledb.query.*;
-import simpledb.materialize.*;
+import simpledb.materialize.MaterializePlan;
+import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
+import simpledb.query.CondOp;
+import simpledb.query.Scan;
+import simpledb.query.UpdateScan;
+import simpledb.record.Schema;
+import simpledb.tx.Transaction;
 
 /**
  * The Plan class for the multi-buffer version of the
  * <i>product</i> operator.
  * @author Edward Sciore
  */
-public class MultibufferProductPlan implements Plan {
+public class BlockJoinPlan implements Plan {
    private Transaction tx;
-   private Plan lhs, rhs;
+   private Plan inner, outer;
    private Schema schema = new Schema();
+   private CondOp condOp;
+   private String joinfieldInner, joinfieldOuter;
 
    /**
     * Creates a product plan for the specified queries.
-    * @param lhs the plan for the LHS query
-    * @param rhs the plan for the RHS query
+    * @param p1 the plan for the LHS query
+    * @param p2 the plan for the RHS query
     * @param tx the calling transaction
     */
-   public MultibufferProductPlan(Transaction tx, Plan lhs, Plan rhs) {
+   public BlockJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, CondOp condOp, String joinfield2) {
       this.tx = tx;
-      this.lhs = new MaterializePlan(tx, lhs);
-      this.rhs = rhs;
-      schema.addAll(lhs.schema());
-      schema.addAll(rhs.schema());
+      int records1 = p1.recordsOutput();
+      int records2 = p2.recordsOutput();
+
+      if (records1 < records2) {
+         inner = p2;
+         outer = p1;
+         this.joinfieldOuter = joinfield1;
+         this.joinfieldInner = joinfield2;
+         this.condOp = condOp;
+      } else {
+         inner = p1;
+         outer = p2;
+         this.joinfieldOuter = joinfield2;
+         this.joinfieldInner = joinfield1;
+         this.condOp = condOp.flip();
+      }
+
+      //might need to use materialise plan for some reason
+//      this.lhs = new MaterializePlan(tx, lhs);
+
+      schema.addAll(p1.schema());
+      schema.addAll(p2.schema());
    }
 
    /**
@@ -41,12 +64,12 @@ public class MultibufferProductPlan implements Plan {
     * It creates a chunk plan for each chunk, saving them in a list.
     * Finally, it creates a multiscan for this list of plans,
     * and returns that scan.
-    * @see simpledb.plan.Plan#open()
+    * @see Plan#open()
     */
    public Scan open() {
-      Scan leftscan = lhs.open();
-      TempTable tt = copyRecordsFrom(rhs);
-      return new MultibufferProductScan(tx, leftscan, tt.tableName(), tt.getLayout());
+      Scan innerscan = inner.open();
+      TempTable tt = copyRecordsFrom(outer);
+      return new BlockJoinScan(tx, innerscan, tt.tableName(), tt.getLayout(), joinfieldOuter, condOp, joinfieldInner);
    }
 
    /**
@@ -57,44 +80,50 @@ public class MultibufferProductPlan implements Plan {
     * The method uses the current number of available buffers
     * to calculate C(p2), and so this value may differ
     * when the query scan is opened.
-    * @see simpledb.plan.Plan#blocksAccessed()
+    * @see Plan#blocksAccessed()
     */
    public int blocksAccessed() {
       // this guesses at the # of chunks
-      int avail = tx.availableBuffs();
-      int size = new MaterializePlan(tx, rhs).blocksAccessed();
-      int numchunks = (int) Math.ceil(size * 1.0 / avail);
-      return rhs.blocksAccessed() +
-            (lhs.blocksAccessed() * numchunks);
+      Plan mpInner = new MaterializePlan(tx, inner); // not opened; just for analysis
+      Plan mpOuter = new MaterializePlan(tx, outer); // not opened; just for analysis
+
+      int avail = tx.availableBuffs() - 2;
+      int size = mpOuter.blocksAccessed();
+      int numchunks = (int)Math.ceil(size * 1.0 / avail);
+
+      int carryoverCost = Math.max(inner.blocksAccessed() +
+              outer.blocksAccessed() - mpOuter.blocksAccessed() - mpInner.blocksAccessed(), 0);
+
+      return size + numchunks * mpInner.blocksAccessed() + carryoverCost;
    }
 
    /**
     * Estimates the number of output records in the product.
     * The formula is:
     * <pre> R(product(p1,p2)) = R(p1)*R(p2) </pre>
-    * @see simpledb.plan.Plan#recordsOutput()
+    * @see Plan#recordsOutput()
     */
    public int recordsOutput() {
-      return lhs.recordsOutput() * rhs.recordsOutput();
+      return inner.recordsOutput() * outer.recordsOutput();
    }
 
    /**
     * Estimates the distinct number of field values in the product.
     * Since the product does not increase or decrease field values,
     * the estimate is the same as in the appropriate underlying query.
-    * @see simpledb.plan.Plan#distinctValues(java.lang.String)
+    * @see Plan#distinctValues(String)
     */
    public int distinctValues(String fldname) {
-      if (lhs.schema().hasField(fldname))
-         return lhs.distinctValues(fldname);
+      if (inner.schema().hasField(fldname))
+         return inner.distinctValues(fldname);
       else
-         return rhs.distinctValues(fldname);
+         return outer.distinctValues(fldname);
    }
 
    /**
     * Returns the schema of the product,
     * which is the union of the schemas of the underlying queries.
-    * @see simpledb.plan.Plan#schema()
+    * @see Plan#schema()
     */
    public Schema schema() {
       return schema;
@@ -116,6 +145,7 @@ public class MultibufferProductPlan implements Plan {
    }
 
    public ExecutionChain GetEC() {
-      return new Join(this, lhs.GetEC(), rhs.GetEC());
+      return new Join(this, outer.GetEC(), inner.GetEC(), joinfieldOuter,
+              condOp.toString(), joinfieldInner);
    }
 }

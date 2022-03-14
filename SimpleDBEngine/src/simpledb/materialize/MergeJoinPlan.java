@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.plan.Plan;
 import simpledb.query.*;
@@ -15,6 +17,7 @@ public class MergeJoinPlan implements Plan {
    private Plan p1, p2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
+   private CondOp condOp;
    
    /**
     * Creates a mergejoin plan for the two specified queries.
@@ -26,7 +29,8 @@ public class MergeJoinPlan implements Plan {
     * @param fldname2 the RHS join field
     * @param tx the calling transaction
     */
-   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String fldname2, boolean isDistinct) {
+   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1,
+                        CondOp condOp, String fldname2, boolean isDistinct) {
       this.fldname1 = fldname1;
       LinkedHashMap<String, Boolean> sortlist1 = new LinkedHashMap<>(){{
          put(fldname1, true);
@@ -46,6 +50,7 @@ public class MergeJoinPlan implements Plan {
       
       sch.addAll(this.p1.schema());
       sch.addAll(this.p2.schema());
+      this.condOp = condOp;
    }
    
    /** The method first sorts its two underlying scans
@@ -56,7 +61,7 @@ public class MergeJoinPlan implements Plan {
    public Scan open() {
       Scan s1 = p1.open();
       SortScan s2 = (SortScan) p2.open();
-      return new MergeJoinScan(s1, s2, fldname1, fldname2);
+      return new MergeJoinScan(s1, s2, fldname1, condOp, fldname2);
    }
    
    /**
@@ -106,6 +111,12 @@ public class MergeJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+
+   public ExecutionChain GetEC() {
+      return new Join(this, p1.GetEC(), p2.GetEC(), fldname1,
+              condOp.toString(), fldname2);
    }
 }
 

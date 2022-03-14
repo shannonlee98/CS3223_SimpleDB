@@ -109,4 +109,8 @@ public class IndexInfo {
       }
       return new Layout(sch);
    }
+
+   public String getFieldName() {
+      return fldname;
+   }
 }

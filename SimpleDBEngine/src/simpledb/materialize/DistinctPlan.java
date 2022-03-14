@@ -1,5 +1,7 @@
 package simpledb.materialize;
 
+import simpledb.display.Distinct;
+import simpledb.display.ExecutionChain;
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
@@ -173,6 +175,10 @@ public class DistinctPlan implements Plan {
      */
     public Schema schema() {
         return sch;
+    }
+
+    public ExecutionChain GetEC() {
+        return new Distinct(this, p.GetEC(), comp.fields);
     }
 
     private boolean copy(Scan src, UpdateScan dest) {

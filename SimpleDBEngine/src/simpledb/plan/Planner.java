@@ -28,6 +28,13 @@ public class Planner {
       verifyQuery(data);
       return qplanner.createPlan(data, tx);
    }
+
+   /**
+    * Execute a setting.
+    */
+   public void executeSetting(String qry) {
+      new Parser(qry).setting();
+   }
    
    /**
     * Executes an SQL insert, delete, modify, or

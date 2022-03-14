@@ -1,5 +1,8 @@
 package simpledb.plan;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
+import simpledb.display.Select;
 import simpledb.query.Predicate;
 import simpledb.query.Scan;
 import simpledb.query.SelectScan;
@@ -82,5 +85,9 @@ public class SelectPlan implements Plan {
     */
    public Schema schema() {
       return p.schema();
+   }
+
+   public ExecutionChain GetEC() {
+      return new Select(this, p.GetEC(), pred.toString());
    }
 }

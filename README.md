@@ -18,8 +18,15 @@ create a long query to see how query plan will look like
 `setting 'product'`  
 
 #### 2 table equi-joins:
-`select sname, grade from student, enroll where studentid = sid`   
+`select sname, grade from student, enroll where studentid = sid order by sname asc, grade asc`   
 `select sname,dname from dept, student where majorid=did`
 
 #### 2 table non-equi-joins:
 `select sname, grade from student, enroll where studentid < sid order by sname asc, grade asc`
+
+#### 4 table equi-joins:
+`select sname, title, prof, grade 
+from student, enroll, course, section 
+where studentid = sid 
+and sectionid = sectid 
+and courseid = cid`

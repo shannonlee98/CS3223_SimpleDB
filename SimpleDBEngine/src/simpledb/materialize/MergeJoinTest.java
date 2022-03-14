@@ -6,6 +6,7 @@ import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.plan.Plan;
 import simpledb.plan.TablePlan;
+import simpledb.query.CondOp;
 import simpledb.query.Constant;
 import simpledb.query.Scan;
 import simpledb.record.RID;
@@ -76,7 +77,7 @@ public class MergeJoinTest {
 
 	private static void useMergeScan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
 		// Open an index join scan on the table.
-		Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, joinfield2, false);
+		Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, new CondOp(CondOp.types.equals), joinfield2, false);
 		Scan s = mergeplan.open();
 
 		while (s.next()) {

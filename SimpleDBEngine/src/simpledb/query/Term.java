@@ -1,6 +1,5 @@
 package simpledb.query;
 
-import simpledb.parse.BadSyntaxException;
 import simpledb.plan.Plan;
 import simpledb.record.*;
 
@@ -39,22 +38,7 @@ public class Term {
     public boolean isSatisfied(Scan s) {
         Constant lhsval = lhs.evaluate(s);
         Constant rhsval = rhs.evaluate(s);
-        switch (condOp.getVal()) {
-            case lessThan:
-                return lhsval.compareTo(rhsval) < 0;
-            case lessThanOrEquals:
-                return lhsval.compareTo(rhsval) <= 0;
-            case equals:
-                return lhsval.equals(rhsval);
-            case moreThan:
-                return lhsval.compareTo(rhsval) > 0;
-            case moreThanOrEquals:
-                return lhsval.compareTo(rhsval) >= 0;
-            case notEquals:
-                return !lhsval.equals(rhsval);
-            default:
-                throw new BadSyntaxException();
-        }
+        return condOp.evaluate(lhsval, rhsval);
     }
 
     /**
@@ -121,7 +105,7 @@ public class Term {
      * @param f2 the name of the second field
      * @return true if there is a relationship between the two fields
      */
-    public boolean relationBetweenField(String f1, String f2) {
+    public boolean hasRelationBetweenField(String f1, String f2) {
         return (lhs.isFieldName() &&
                 lhs.asFieldName().equals(f1) &&
                 rhs.isFieldName() &&
@@ -165,6 +149,11 @@ public class Term {
     public boolean appliesTo(Schema sch) {
         return lhs.appliesTo(sch) && rhs.appliesTo(sch);
     }
+
+    public CondOp getCondOp() {return condOp;}
+
+    public Expression getLhs() {return lhs;}
+    public Expression getRhs() {return rhs;}
 
     @Override
     public String toString() {

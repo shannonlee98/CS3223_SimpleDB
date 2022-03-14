@@ -1,7 +1,9 @@
 package simpledb.multibuffer;
 
+import simpledb.query.CondOp;
 import simpledb.query.Constant;
 import simpledb.query.Scan;
+import simpledb.query.Term;
 import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 
@@ -16,6 +18,7 @@ public class BlockJoinScan implements Scan {
    private String filename, joinfieldOuter, joinfieldInner;
    private Layout layout;
    private int chunksize, nextblknum, filesize;
+   private CondOp condOp;
 
 
    /**
@@ -25,7 +28,8 @@ public class BlockJoinScan implements Scan {
     * @param tx the current transaction
     */
    public BlockJoinScan(Transaction tx, Scan innerscan, String tblname, Layout layout,
-                        String joinfieldOuter, String joinfieldInner) {
+                        String joinfieldOuter, CondOp condOp, String joinfieldInner) {
+      this.condOp = condOp;
       this.tx = tx;
       this.inner = innerscan;
       this.filename = tblname + ".tbl";
@@ -82,7 +86,7 @@ public class BlockJoinScan implements Scan {
             }
          }
 
-         if (inner.getVal(joinfieldInner).equals(outer.getVal(joinfieldOuter))) {
+         if (condOp.evaluate(outer.getVal(joinfieldOuter), inner.getVal(joinfieldInner))) {
             return true;
          }
       }

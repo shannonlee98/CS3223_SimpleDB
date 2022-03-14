@@ -11,15 +11,27 @@ public class Join implements ExecutionChain{
     ExecutionChain right;
     String leftJoinField;
     String rightJoinField;
+    String sign;
     Plan main;
 
     public Join(Plan main, ExecutionChain left,
-                ExecutionChain right, String leftJoinField, String rightJoinField) {
+                ExecutionChain right, String leftJoinField, String sign, String rightJoinField) {
         this.left = left;
         this.right = right;
         this.leftJoinField = leftJoinField;
         this.rightJoinField = rightJoinField;
         this.main = main;
+        this.sign = sign;
+    }
+
+    public Join(Plan main, ExecutionChain left,
+                ExecutionChain right) {
+        this.left = left;
+        this.right = right;
+        this.leftJoinField = null;
+        this.rightJoinField = null;
+        this.main = main;
+        this.sign = null;
     }
 
     @Override
@@ -31,8 +43,8 @@ public class Join implements ExecutionChain{
 
     @Override
     public String display() {
-        String joininfo = leftJoinField == "" || leftJoinField == null ? "" : "(" + leftJoinField +
-                "=" + rightJoinField + ")";
+        String joininfo = leftJoinField == null || leftJoinField == "" ? "" : "(" + leftJoinField +
+                sign + rightJoinField + ")";
         return   "[" + left.display() + " " + this.getName() + joininfo + " " + right.display() + "]";
     }
 

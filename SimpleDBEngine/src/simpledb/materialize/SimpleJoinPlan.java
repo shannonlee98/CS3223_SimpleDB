@@ -3,6 +3,7 @@ package simpledb.materialize;
 import simpledb.display.ExecutionChain;
 import simpledb.display.Join;
 import simpledb.plan.Plan;
+import simpledb.query.CondOp;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
 import simpledb.record.TableScan;
@@ -97,6 +98,7 @@ public class SimpleJoinPlan implements Plan {
    }
 
    public ExecutionChain GetEC() {
-      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield1, joinfield2);
+      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield1,
+              new CondOp(CondOp.types.equals).toString(), joinfield2);
    }
 }

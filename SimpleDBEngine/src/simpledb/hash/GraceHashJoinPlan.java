@@ -5,6 +5,7 @@ import simpledb.display.Join;
 import simpledb.materialize.MaterializePlan;
 import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
+import simpledb.query.CondOp;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
 import simpledb.record.Schema;
@@ -194,6 +195,7 @@ public class GraceHashJoinPlan implements Plan {
     }
 
     public ExecutionChain GetEC() {
-        return new Join(this, smaller.GetEC(), larger.GetEC(), joinfieldSmaller, joinfieldLarger);
+        return new Join(this, smaller.GetEC(), larger.GetEC(), joinfieldSmaller,
+                new CondOp(CondOp.types.equals).toString() ,joinfieldLarger);
     }
 }

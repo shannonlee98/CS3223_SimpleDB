@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.controller.Setting;
 import simpledb.query.*;
 import simpledb.record.*;
 import simpledb.materialize.*;
@@ -61,6 +62,12 @@ public class Parser {
             pred.conjoinWith(predicate());
         }
         return pred;
+    }
+
+    //set some stuff in simple ij
+    public void setting() {
+        lex.eatKeyword("setting");
+        Setting.getInstance().setJoinMode(lex.eatStringConstant());
     }
 
 // Methods for parsing queries

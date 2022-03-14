@@ -5,6 +5,7 @@ import simpledb.display.Join;
 import simpledb.materialize.MaterializePlan;
 import simpledb.materialize.TempTable;
 import simpledb.plan.Plan;
+import simpledb.query.CondOp;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
 import simpledb.record.Schema;
@@ -19,6 +20,7 @@ public class BlockJoinPlan implements Plan {
    private Transaction tx;
    private Plan inner, outer;
    private Schema schema = new Schema();
+   private CondOp condOp;
    private String joinfieldInner, joinfieldOuter;
 
    /**
@@ -27,7 +29,7 @@ public class BlockJoinPlan implements Plan {
     * @param p2 the plan for the RHS query
     * @param tx the calling transaction
     */
-   public BlockJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
+   public BlockJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, CondOp condOp, String joinfield2) {
       this.tx = tx;
       int records1 = p1.recordsOutput();
       int records2 = p2.recordsOutput();
@@ -37,11 +39,13 @@ public class BlockJoinPlan implements Plan {
          outer = p1;
          this.joinfieldOuter = joinfield1;
          this.joinfieldInner = joinfield2;
+         this.condOp = condOp;
       } else {
          inner = p1;
          outer = p2;
          this.joinfieldOuter = joinfield2;
          this.joinfieldInner = joinfield1;
+         this.condOp = condOp.flip();
       }
 
       //might need to use materialise plan for some reason
@@ -65,7 +69,7 @@ public class BlockJoinPlan implements Plan {
    public Scan open() {
       Scan innerscan = inner.open();
       TempTable tt = copyRecordsFrom(outer);
-      return new BlockJoinScan(tx, innerscan, tt.tableName(), tt.getLayout(), joinfieldOuter, joinfieldInner);
+      return new BlockJoinScan(tx, innerscan, tt.tableName(), tt.getLayout(), joinfieldOuter, condOp, joinfieldInner);
    }
 
    /**
@@ -141,6 +145,7 @@ public class BlockJoinPlan implements Plan {
    }
 
    public ExecutionChain GetEC() {
-      return new Join(this, outer.GetEC(), inner.GetEC(), joinfieldOuter, joinfieldInner);
+      return new Join(this, outer.GetEC(), inner.GetEC(), joinfieldOuter,
+              condOp.toString(), joinfieldInner);
    }
 }

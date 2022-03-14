@@ -4,6 +4,7 @@ import simpledb.metadata.IndexInfo;
 import simpledb.metadata.MetadataMgr;
 import simpledb.plan.Plan;
 import simpledb.plan.TablePlan;
+import simpledb.query.CondOp;
 import simpledb.query.Scan;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;

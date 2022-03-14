@@ -81,6 +81,6 @@ public class ProductPlan implements Plan {
 
 
    public ExecutionChain GetEC() {
-      return new Join(this, p1.GetEC(), p2.GetEC(), "","");
+      return new Join(this, p1.GetEC(), p2.GetEC());
    }
 }

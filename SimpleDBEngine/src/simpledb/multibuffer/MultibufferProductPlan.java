@@ -116,6 +116,6 @@ public class MultibufferProductPlan implements Plan {
    }
 
    public ExecutionChain GetEC() {
-      return new Join(this, lhs.GetEC(), rhs.GetEC(), "", "");
+      return new Join(this, lhs.GetEC(), rhs.GetEC());
    }
 }

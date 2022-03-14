@@ -92,6 +92,7 @@ public class IndexJoinPlan implements Plan {
    }
 
    public ExecutionChain GetEC() {
-      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield, ii.getFieldName());
+      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield,
+              new CondOp(CondOp.types.equals).toString(), ii.getFieldName());
    }
 }

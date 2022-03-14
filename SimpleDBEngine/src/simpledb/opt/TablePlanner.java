@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import simpledb.controller.Setting;
 import simpledb.display.ExecutionPath;
+import simpledb.display.Join;
 import simpledb.hash.GraceHashJoinPlan;
 import simpledb.multibuffer.BlockJoinPlan;
 import simpledb.tx.Transaction;
@@ -77,14 +79,54 @@ class TablePlanner {
       //is it possible that a plan that is null has the lowest cost? so this will return null when there
       //is actually another plan with a higher cost that is non-null
 
+      //get the join operation
+
+      Term joinTerm = joinpred.getMostConstrainingTerm();
+      String lhsfield = joinTerm.getLhs().asFieldName();
+      String rhsfield = joinTerm.getRhs().asFieldName();
+      CondOp condOp = joinTerm.getCondOp();
+      if (myschema.hasField(lhsfield)) {
+         //need to flip terms
+         String temp = lhsfield;
+         lhsfield = rhsfield;
+         rhsfield = temp;
+         condOp = condOp.flip();
+      }
+
+      //check for any overrides from settings
+      Plan p = null;
+      switch (Setting.getInstance().getJoinMode()) {
+         case product:
+            return makeProductJoin(current, currsch);
+         case index:
+            return addJoinPred(addSelectPred(makeIndexJoin(current, currsch)), currsch);
+         case hash:
+            if (condOp.getVal() == CondOp.types.equals) {
+               p = new GraceHashJoinPlan(tx, current, myplan, lhsfield, rhsfield);
+            }
+            break;
+         case merge:
+            if (condOp.getVal() == CondOp.types.equals) {
+               p = new MergeJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield, false);
+            }
+            break;
+         case block:
+            p = new BlockJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield);
+            break;
+      }
+      if (p != null) return addJoinPred(addSelectPred(p), currsch);
+
+      //do default cost calculation
       List<Plan> JoinPlans = new ArrayList<>();
-      JoinPlans.add(makeBlockJoin(current, currsch));
-      JoinPlans.add(makeHashJoin(current, currsch));
-      JoinPlans.add(makeMergeJoin(current, currsch));
+      JoinPlans.add(new BlockJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield));
+
+      if (condOp.getVal() == CondOp.types.equals) {
+         JoinPlans.add(new GraceHashJoinPlan(tx, current, myplan, lhsfield, rhsfield));
+         JoinPlans.add(new MergeJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield, false));
+      }
       JoinPlans.add(makeIndexJoin(current, currsch));
 
       int cost = Integer.MAX_VALUE;
-      Plan p = null;
       for (Plan jp: JoinPlans) {
          if (jp != null && jp.blocksAccessed() < cost) {
             p = jp;
@@ -97,7 +139,7 @@ class TablePlanner {
          }
       }
 
-      return p != null ? p : makeProductJoin(current, currsch);
+      return p != null ? addJoinPred(addSelectPred(p), currsch) : makeProductJoin(current, currsch);
    }
    
    /**
@@ -123,50 +165,13 @@ class TablePlanner {
       return null;
    }
 
-   private Plan makeBlockJoin(Plan current, Schema currsch) {
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new BlockJoinPlan(tx, current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
-   private Plan makeHashJoin(Plan current, Schema currsch) {
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new GraceHashJoinPlan(tx, current, myplan, outerfield, fldname);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
-   private Plan makeMergeJoin(Plan current, Schema currsch) {
-      for (String fldname : myschema.fields()) {
-         String outerfield = mypred.equatesWithField(fldname);
-         if (outerfield != null && currsch.hasField(outerfield)) {
-            Plan p = new MergeJoinPlan(tx, current, myplan, outerfield, fldname, isDistinct);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
-         }
-      }
-      return null;
-   }
-
    private Plan makeIndexJoin(Plan current, Schema currsch) {
       for (String fldname : indexes.keySet()) {
          String outerfield = mypred.equatesWithField(fldname);
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
             Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
-            p = addSelectPred(p);
-            return addJoinPred(p, currsch);
+            return p;
          }
       }
       return null;

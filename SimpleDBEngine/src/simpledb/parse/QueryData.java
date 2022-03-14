@@ -24,7 +24,7 @@ public class QueryData {
     */
    public QueryData(boolean isDistinct, List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
                     LinkedHashMap<String, Boolean> orderByFields, List<String> groupByFields) {
-      fields.addAll(groupByFields);
+//      fields.addAll(groupByFields);
       this.isDistinct = isDistinct;
       this.fields = fields;
       this.aggregates = aggregates;
@@ -49,6 +49,18 @@ public class QueryData {
     * @return a list of pairs containing aggregate and field names
     */
    public List<AggregationFn> aggregates() { return aggregates; }
+
+   /**
+    * Returns the aggregates mentioned in the select clause.
+    * @return a list of pairs containing aggregate and field names
+    */
+   public List<String> aggregatesFields() {
+      List<String> aggregateFields = new ArrayList<>();
+      for (AggregationFn aggrFn : aggregates) {
+         aggregateFields.add(aggrFn.field());
+      }
+      return aggregateFields;
+   }
 
    /**
     * Returns the tables mentioned in the from clause.

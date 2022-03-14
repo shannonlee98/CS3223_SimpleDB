@@ -1,7 +1,12 @@
 package simpledb.plan;
 
+import simpledb.materialize.AggregationFn;
+import simpledb.query.Predicate;
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.parse.*;
+
+import java.util.*;
 
 /**
  * The object that executes SQL statements.
@@ -25,7 +30,7 @@ public class Planner {
    public Plan createQueryPlan(String qry, Transaction tx) {
       Parser parser = new Parser(qry);
       QueryData data = parser.query();
-      verifyQuery(data);
+      verifyQuery(data, tx);
       return qplanner.createPlan(data, tx);
    }
 
@@ -67,7 +72,35 @@ public class Planner {
    }
  
    // SimpleDB does not verify queries, although it should.
-   private void verifyQuery(QueryData data) {
+   private void verifyQuery(QueryData data, Transaction tx) {
+      Collection<String> tables = data.tables();
+      Schema schema = new Schema();
+      for (String tblname : tables) {
+         schema.addAll(qplanner.getSchema(tblname, tx));
+      }
+
+      LinkedHashMap<String, Boolean> orderFields = data.orderByFields();
+      verifyFields(orderFields.keySet(), schema);
+      verifyFields(data.groupByFields(), schema);
+      verifyFields(data.aggregatesFields(), schema);
+      verifySelectFields(data.fields(), schema, data.aggregates());
+
+      Predicate pred = data.pred();
+      verifyFields(pred.getFields(), schema);
+   }
+
+   private void verifyFields(Collection<String> fields, Schema schema) {
+      for (String fldname : fields)
+         if (!schema.hasField(fldname))
+            throw new BadSyntaxException("Field '" + fldname + "' does not exist");
+   }
+
+   private void verifySelectFields(Collection<String> fields, Schema schema, List<AggregationFn> aggregates){
+      for (String fldname : fields)
+         if (!schema.hasField(fldname))
+            for (AggregationFn aggrFn : aggregates)
+               if (!fldname.equals(aggrFn.fieldName()))
+                  throw new BadSyntaxException("Field '" + fldname + "' does not exist");
    }
 
    // SimpleDB does not verify updates, although it should.

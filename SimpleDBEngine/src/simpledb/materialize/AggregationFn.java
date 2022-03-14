@@ -28,6 +28,12 @@ public interface AggregationFn {
     * @return the name of the new aggregation field
     */
    String fieldName();
+
+   /**
+    * Return the field name to be aggregated on.
+    * @return the field name to be aggregated on
+    */
+   String field();
    
    /**
     * Return the computed aggregation value.

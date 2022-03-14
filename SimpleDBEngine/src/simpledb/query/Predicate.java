@@ -57,6 +57,17 @@ public class Predicate {
       return true;
    }
 
+   /**
+    * Returns a list of any fields that are in the predicate
+    * @return list of fields names in the predicate
+    */
+   public List<String> getFields() {
+      List<String> fields = new ArrayList<>();
+      for (Term t : terms)
+         fields.addAll(t.getFields());
+      return fields;
+   }
+
    /** 
     * Calculate the extent to which selecting on the predicate 
     * reduces the number of records output by a query.

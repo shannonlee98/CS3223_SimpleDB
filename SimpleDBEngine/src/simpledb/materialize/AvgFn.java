@@ -51,7 +51,16 @@ public class AvgFn implements AggregationFn {
    public String fieldName() {
       return "avgof" + fldname;
    }
-   
+
+   /**
+    * Return the field name to be aggregated on.
+    *
+    * @return the field name to be aggregated on
+    */
+   public String field() {
+      return fldname;
+   }
+
    /**
     * Return the current avg.
     * @see AggregationFn#value()

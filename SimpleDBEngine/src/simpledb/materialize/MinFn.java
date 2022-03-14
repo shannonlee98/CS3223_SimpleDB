@@ -46,7 +46,16 @@ public class MinFn implements AggregationFn {
    public String fieldName() {
       return "minof" + fldname;
    }
-   
+
+   /**
+    * Return the field name to be aggregated on.
+    *
+    * @return the field name to be aggregated on
+    */
+   public String field() {
+      return fldname;
+   }
+
    /**
     * Return the current minimum.
     * @see AggregationFn#value()

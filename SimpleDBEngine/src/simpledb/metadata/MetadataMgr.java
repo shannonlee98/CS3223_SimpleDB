@@ -44,4 +44,8 @@ public class MetadataMgr {
    public StatInfo getStatInfo(String tblname, Layout layout, Transaction tx) {
       return statmgr.getStatInfo(tblname, layout, tx);
    }
+
+   public Schema getSchema(String tblname, Transaction tx) {
+      return tblmgr.getSchema(tblname, tx);
+   }
 }

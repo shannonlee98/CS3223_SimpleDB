@@ -3,6 +3,9 @@ package simpledb.query;
 import simpledb.plan.Plan;
 import simpledb.record.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A term is a comparison between two expressions.
  *
@@ -39,6 +42,22 @@ public class Term {
         Constant lhsval = lhs.evaluate(s);
         Constant rhsval = rhs.evaluate(s);
         return condOp.evaluate(lhsval, rhsval);
+    }
+
+    /**
+     * Returns a list of any fields in the term
+     *
+     * @return list of field names in term
+     */
+    public List<String> getFields() {
+        List<String> fields = new ArrayList<>();
+        if (lhs.isFieldName()) {
+            fields.add(lhs.asFieldName());
+        }
+        if (rhs.isFieldName()) {
+            fields.add(rhs.asFieldName());
+        }
+        return fields;
     }
 
     /**

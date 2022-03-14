@@ -16,7 +16,7 @@ public class Tester {
 		 Planner planner = db.planner();
 
          // analogous to the statement
-         String qry = "select SName, majorid from STUDENT";
+         String qry = "select max(sid from student order by";
 //                    + "set MajorId=10 "
 //                    + "where SName > 'art'";
 //
@@ -25,12 +25,14 @@ public class Tester {
          // analogous to the result set
          Scan s = p.open();
 
-         System.out.println("Name\tMajor");
-         while (s.next()) {
-             String sname = s.getString("sname"); //SimpleDB stores field names
-             int dname = s.getInt("majorid"); //in lower case
-             System.out.println(sname + "\t" + dname);
-         }
+         System.out.println("success");
+//         System.out.println("Name\tMajor");
+//         while (s.next()) {
+//             String sname = s.getString("sname"); //SimpleDB stores field names
+//             int dname = s.getInt("gradyear"); //in lower case
+//             System.out.println(sname + "\t" + dname);
+//             System.out.println(dname);
+//         }
 		 
 //		 String qry = "create index majoridx "
 //				 	+ "on STUDENT(MajorID) using hash";

@@ -6,6 +6,7 @@ import simpledb.display.ExecutionPath;
 import simpledb.materialize.DistinctPlan;
 import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.metadata.MetadataMgr;
 import simpledb.parse.QueryData;
@@ -53,25 +54,27 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       }
       
       // Step 4.  Project on the field names and return
-      Plan p = new ProjectPlan(currentplan, data.fields());
-
-      // Step 5: Add a distinct plan if isDistinct is true
-      if (data.isDistinct()) {
-         p = new DistinctPlan(tx, p, data.fields());
-      }
+//      Plan p = new ProjectPlan(currentplan, data.fields());
 
       // Step 6: Add a sort plan if ordered
       if (data.orderByFields().size() > 0) {
-         p = new SortPlan(tx, p, data.orderByFields(), data.isDistinct());
+         currentplan = new SortPlan(tx, currentplan, data.orderByFields(), data.isDistinct());
       }
 
       // Step 7: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
-         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates(), data.isDistinct());
+         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggregates(), data.isDistinct());
       }
 
-      ExecutionPath.getInstance().print(p.GetEC());
-      return p;
+      currentplan = new ProjectPlan(currentplan, data.fields());
+
+      // Step 5: Add a distinct plan if isDistinct is true
+      if (data.isDistinct()) {
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+      }
+
+      ExecutionPath.getInstance().print(currentplan.GetEC());
+      return currentplan;
    }
    
    private Plan getLowestSelectPlan() {
@@ -120,5 +123,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
    public void setPlanner(Planner p) {
       // for use in planning views, which
       // for simplicity this code doesn't do.
+   }
+
+   public Schema getSchema(String tblname, Transaction tx) {
+      return mdm.getSchema(tblname, tx);
    }
 }

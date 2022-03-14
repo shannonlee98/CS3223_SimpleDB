@@ -22,7 +22,9 @@ public class Sort implements ExecutionChain{
             output += key + " " + (sortfields.get(key) ? "ASC" : "DSC") + ", ";
         }
 
-        return output.substring(0, output.length() - 2);
+        if (output.length() >= 2)
+            return output.substring(0, output.length() - 2);
+        return output;
     }
 
     @Override

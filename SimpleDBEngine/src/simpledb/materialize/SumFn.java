@@ -46,7 +46,16 @@ public class SumFn implements AggregationFn {
    public String fieldName() {
       return "sumof" + fldname;
    }
-   
+
+   /**
+    * Return the field name to be aggregated on.
+    *
+    * @return the field name to be aggregated on
+    */
+   public String field() {
+      return fldname;
+   }
+
    /**
     * Return the current sum.
     * @see AggregationFn#value()

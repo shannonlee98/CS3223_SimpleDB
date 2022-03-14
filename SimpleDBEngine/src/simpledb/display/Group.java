@@ -27,9 +27,18 @@ public class Group implements ExecutionChain {
 
     @Override
     public String display() {
-        return child.display() + "." + getName() + "(" +
+        String aggr = "";
+        for (AggregationFn fn : aggrfields) {
+            aggr += (fn.fieldName()) + (", ");
+        }
+        if (!aggr.equals("")) {
+            aggr = aggr.substring(0, aggr.length() - 2);
+        }
+        String display = child.display() + "." + getName() + "(" +
                 groupfields.toString().replace("[", "").
                         replace("]", "") + ")";
+        display += ".AGGR(" + aggr + ")";
+        return display;
     }
 
     @Override

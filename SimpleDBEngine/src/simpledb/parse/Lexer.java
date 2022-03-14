@@ -163,7 +163,7 @@ public class Lexer {
     */
    public void eatKeyword(String w) {
       if (!matchKeyword(w))
-         throw new BadSyntaxException();
+         throw new BadSyntaxException("Expected '" + w + "' but got '" + tok.toString() + "'");
       nextToken();
    }
 

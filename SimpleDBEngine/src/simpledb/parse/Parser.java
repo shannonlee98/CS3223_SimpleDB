@@ -82,14 +82,30 @@ public class Parser {
             String field;
             if (lex.matchAggregate()) {
                 String aggregate = aggregate();
-                lex.eatDelim('(');
+                try {
+                    lex.eatDelim('(');
+                } catch (BadSyntaxException e) {
+                    throw new BadSyntaxException("Delimiter'(' expected in aggregate function");
+                }
+                if (lex.matchDelim(')'))
+                    throw new BadSyntaxException("Aggregate function cannot be empty");
                 field = field();
-                lex.eatDelim(')');
-                aggregates.add(getAggregateFn(aggregate, field));
+                try {
+                    lex.eatDelim(')');
+                } catch (BadSyntaxException e) {
+                    throw new BadSyntaxException("Delimiter')' expected in aggregate function");
+                }
+                AggregationFn aggrFn = getAggregateFn(aggregate, field);
+                aggregates.add(aggrFn);
+                fields.add(aggrFn.fieldName());
             } else {
-                field = field();
+                try {
+                    field = field();
+                    fields.add(field);
+                } catch (BadSyntaxException e) {
+                    throw new BadSyntaxException("Field expected in select clause");
+                }
             }
-            fields.add(field);
 
             if (!lex.matchDelim(','))
                 break;
@@ -115,7 +131,6 @@ public class Parser {
             lex.eatKeyword("by");
             groupByFields = groupByList();
         }
-//        System.out.println(isDistinct);
         return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
     }
 
@@ -167,16 +182,21 @@ public class Parser {
 
     private LinkedHashMap<String, Boolean> orderByList() {
         LinkedHashMap<String, Boolean> orderByFields = new LinkedHashMap<>();
-        String field = field();
-        boolean isAsc = true;
-        if (lex.matchKeyword("asc")) {
-            lex.eatKeyword("asc");
-        } else if (lex.matchKeyword("desc")) {
-            lex.eatKeyword("desc");
-            isAsc = false;
+        try {
+            String field = field();
+            boolean isAsc = true;
+            if (lex.matchKeyword("asc")) {
+                lex.eatKeyword("asc");
+            } else if (lex.matchKeyword("desc")) {
+                lex.eatKeyword("desc");
+                isAsc = false;
+            }
+
+            orderByFields.put(field, isAsc);
+        } catch (BadSyntaxException e) {
+            throw new BadSyntaxException("Field expected in order by clause");
         }
 
-        orderByFields.put(field, isAsc);
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
             orderByFields.putAll(orderByList());
@@ -186,9 +206,13 @@ public class Parser {
 
     private List<String> groupByList() {
         List<String> groupByFields = new ArrayList<>();
-        String field = field();
+        try {
+            String field = field();
+            groupByFields.add(field);
+        } catch (BadSyntaxException e) {
+            throw new BadSyntaxException("Field expected in group by clause");
+        }
 
-        groupByFields.add(field);
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
             groupByFields.addAll(groupByList());

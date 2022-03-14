@@ -1,6 +1,8 @@
 package simpledb.plan;
 
 import java.util.*;
+
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.metadata.*;
 import simpledb.parse.*;
@@ -54,4 +56,8 @@ public class BetterQueryPlanner implements QueryPlanner {
       p = new ProjectPlan(p, data.fields());
       return p;
    }
+
+    public Schema getSchema(String tblname, Transaction tx) {
+        return mdm.getSchema(tblname, tx);
+    }
 }

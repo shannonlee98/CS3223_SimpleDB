@@ -35,7 +35,7 @@ public class BlockJoinScan implements Scan {
       this.filename = tblname + ".tbl";
       this.layout = layout;
       filesize = tx.size(filename);
-      int available = tx.availableBuffs() - 2;
+      int available = Math.min(1, tx.availableBuffs() - 2);
       chunksize = BufferNeeds.bestFactor(available, filesize);
       beforeFirst();
       this.joinfieldOuter = joinfieldOuter;

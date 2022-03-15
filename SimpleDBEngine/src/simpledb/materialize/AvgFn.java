@@ -68,4 +68,13 @@ public class AvgFn implements AggregationFn {
    public Constant value() {
       return new Constant(sum/count);
    }
+
+   /**
+    * Return if the aggregated value is always an integer.
+    *
+    * @return if the aggregated value is always an integer
+    */
+   public boolean isAlwaysInteger() {
+      return true;
+   }
 }

@@ -34,6 +34,7 @@ public class MaxFn implements AggregationFn {
     */
    public void processNext(Scan s) {
       Constant newval = s.getVal(fldname);
+//      System.out.println("xxxxx old: " + val.toString() + " vs new: " + newval.toString());
       if (newval.compareTo(val) > 0)
          val = newval;
    }
@@ -61,5 +62,14 @@ public class MaxFn implements AggregationFn {
     */
    public Constant value() {
       return val;
+   }
+
+   /**
+    * Return if the aggregated value is always an integer.
+    *
+    * @return if the aggregated value is always an integer
+    */
+   public boolean isAlwaysInteger() {
+      return false;
    }
 }

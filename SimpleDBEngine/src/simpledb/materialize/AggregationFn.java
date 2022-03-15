@@ -40,4 +40,11 @@ public interface AggregationFn {
     * @return the computed aggregation value
     */
    Constant value();
+
+
+   /**
+    * Return if the aggregated value is always an integer.
+    * @return if the aggregated value is always an integer
+    */
+   boolean isAlwaysInteger();
 }

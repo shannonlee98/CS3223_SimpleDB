@@ -64,4 +64,13 @@ public class CountFn implements AggregationFn {
    public Constant value() {
       return new Constant(count);
    }
+
+   /**
+    * Return if the aggregated value is always an integer.
+    *
+    * @return if the aggregated value is always an integer
+    */
+   public boolean isAlwaysInteger() {
+      return true;
+   }
 }

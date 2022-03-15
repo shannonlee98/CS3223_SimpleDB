@@ -1,6 +1,8 @@
 package simpledb.metadata;
 
 import java.util.*;
+
+import simpledb.parse.BadSyntaxException;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 
@@ -80,7 +82,7 @@ class TableMgr {
     */
    public Layout getLayout(String tblname, Transaction tx) {
       int size = -1;
-    TableScan tcat = new TableScan(tx, "tblcat", tcatLayout);
+      TableScan tcat = new TableScan(tx, "tblcat", tcatLayout);
       while(tcat.next())
          if(tcat.getString("tblname").equals(tblname)) {
             size = tcat.getInt("slotsize");
@@ -102,5 +104,44 @@ class TableMgr {
          }
       fcat.close();
       return new Layout(sch, offsets, size);
+   }
+
+   /**
+    * Verify that a table exists in the catalog
+    * @param tblname the name of the table
+    * @param tx the transaction
+    */
+   public void verifyTable(String tblname, Transaction tx) {
+      TableScan tcat = new TableScan(tx, "tblcat", tcatLayout);
+      while(tcat.next())
+         if(tcat.getString("tblname").equals(tblname)) {
+            tcat.close();
+            return;
+         }
+      tcat.close();
+      throw new BadSyntaxException("Table '" + tblname + "' does not exist");
+   }
+
+   /**
+    * Retrieve the layout of the specified table
+    * from the catalog.
+    * @param tblname the name of the table
+    * @param tx the transaction
+    * @return the table's schema
+    */
+   public Schema getSchema(String tblname, Transaction tx) {
+      verifyTable(tblname, tx);
+
+      TableScan fcat = new TableScan(tx, "fldcat", fcatLayout);
+      Schema schema = new Schema();
+      while(fcat.next())
+         if(fcat.getString("tblname").equals(tblname)) {
+            String fldname = fcat.getString("fldname");
+            int fldtype    = fcat.getInt("type");
+            int fldlen     = fcat.getInt("length");
+            schema.addField(fldname, fldtype, fldlen);
+         }
+      fcat.close();
+      return schema;
    }
 }

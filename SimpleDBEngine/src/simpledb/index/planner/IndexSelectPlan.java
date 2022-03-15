@@ -1,5 +1,8 @@
 package simpledb.index.planner;
 
+import simpledb.display.Distinct;
+import simpledb.display.ExecutionChain;
+import simpledb.display.Select;
 import simpledb.record.*;
 import simpledb.query.*;
 import simpledb.metadata.IndexInfo;
@@ -15,7 +18,7 @@ public class IndexSelectPlan implements Plan {
    private Plan p;
    private IndexInfo ii;
    private Constant val;
-   
+
    /**
     * Creates a new indexselect node in the query tree
     * for the specified index and selection constant.
@@ -75,5 +78,9 @@ public class IndexSelectPlan implements Plan {
     */
    public Schema schema() {
       return p.schema(); 
+   }
+
+   public ExecutionChain GetEC() {
+      return new Select(this, p.GetEC(), ii.getFieldName() + "=" + val.toString());
    }
 }

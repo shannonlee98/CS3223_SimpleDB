@@ -1,5 +1,7 @@
 package simpledb.multibuffer;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
 import simpledb.query.*;
@@ -61,7 +63,7 @@ public class MultibufferProductPlan implements Plan {
       // this guesses at the # of chunks
       int avail = tx.availableBuffs();
       int size = new MaterializePlan(tx, rhs).blocksAccessed();
-      int numchunks = size / avail;
+      int numchunks = (int) Math.ceil(size * 1.0 / avail);
       return rhs.blocksAccessed() +
             (lhs.blocksAccessed() * numchunks);
    }
@@ -111,5 +113,9 @@ public class MultibufferProductPlan implements Plan {
       src.close();
       dest.close();
       return t;
+   }
+
+   public ExecutionChain GetEC() {
+      return new Join(this, lhs.GetEC(), rhs.GetEC());
    }
 }

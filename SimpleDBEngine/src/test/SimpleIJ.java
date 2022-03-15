@@ -31,6 +31,9 @@ public class SimpleIJ {
                break;
             else if (cmd.startsWith("select"))
                doQuery(planner, tx, cmd);
+            else if (cmd.startsWith("setting")) {
+               doSetting(planner, cmd);
+            }
             else
                doUpdate(planner, tx, cmd);
             System.out.print("\nSQL> ");
@@ -103,6 +106,17 @@ public class SimpleIJ {
       }
       catch (Exception e) {
          System.out.println("SQL Exception: " + e.getMessage());
+      }
+   }
+
+   private static void doSetting(Planner planner, String cmd) {
+      try {
+         planner.executeSetting(cmd);
+         System.out.println("[success]");
+      }
+      catch (Exception e) {
+         System.out.println("SQL Exception: " + e.getMessage());
+         System.out.println("[unsuccessful]");
       }
    }
 }

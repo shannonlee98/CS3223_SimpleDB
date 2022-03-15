@@ -9,14 +9,14 @@ import simpledb.query.*;
  * @author Edward Sciore
  */
 public class RecordComparator implements Comparator<Scan> {
-   private Map<String, Boolean> fields;
+   public LinkedHashMap<String, Boolean> fields;
    
    /**
     * Create a comparator using the specified fields,
     * using the ordering implied by its iterator.
     * @param fields a list of field names
     */
-   public RecordComparator(Map<String, Boolean> fields) {
+   public RecordComparator(LinkedHashMap<String, Boolean> fields) {
       this.fields = fields;
    }
    

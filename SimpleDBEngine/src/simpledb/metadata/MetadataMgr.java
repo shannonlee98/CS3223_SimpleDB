@@ -44,4 +44,14 @@ public class MetadataMgr {
    public StatInfo getStatInfo(String tblname, Layout layout, Transaction tx) {
       return statmgr.getStatInfo(tblname, layout, tx);
    }
+
+   /**
+    * Returns the schema of the specified table
+    * @param tblname the table name
+    * @param tx the calling transaction
+    * @return schema of the specified table
+    */
+   public Schema getSchema(String tblname, Transaction tx) {
+      return tblmgr.getSchema(tblname, tx);
+   }
 }

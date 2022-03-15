@@ -37,7 +37,7 @@ public class GroupValue {
    
    /** 
     * Two GroupValue objects are equal if they have the same values
-    * for their grouping fields. 
+    * for their grouping fields or if
     * @see java.lang.Object#equals(java.lang.Object)
     */
    public boolean equals(Object obj) {

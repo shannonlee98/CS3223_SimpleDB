@@ -1,5 +1,8 @@
 package simpledb.plan;
 
+import simpledb.display.ExecutionChain;
+import simpledb.display.Join;
+import simpledb.display.Table;
 import simpledb.tx.Transaction;
 import simpledb.metadata.*;
 import simpledb.query.Scan;
@@ -69,5 +72,9 @@ public class TablePlan implements Plan {
     */
    public Schema schema() {
       return layout.schema();
+   }
+
+   public ExecutionChain GetEC() {
+      return new Table(this, tblname);
    }
 }

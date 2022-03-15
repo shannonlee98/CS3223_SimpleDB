@@ -1,6 +1,8 @@
 package simpledb.plan;
 
 import java.util.*;
+
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.metadata.*;
 import simpledb.parse.*;
@@ -45,14 +47,29 @@ public class BasicQueryPlanner implements QueryPlanner {
       p = new SelectPlan(p, data.pred());
       
       //Step 4: Project on the field names
-      p = new ProjectPlan(p, data.selectFields());
+      p = new ProjectPlan(p, data.fields());
 
       //Step 5: Add a sort plan if ordered
-      if (data.OrderByFields().size() > 0) {
-          p = new SortPlan(tx, p, data.OrderByFields());
+      if (data.orderByFields().size() > 0) {
+          p = new SortPlan(tx, p, data.orderByFields(), data.isDistinct());
        }
+
+      //Step 6: Add a group plan if there is aggregation or 'group by'
+      if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
+         p = new GroupByPlan(tx, p, data.groupByFields(), data.aggregates(), data.isDistinct());
+      }
 
       return p;
       
    }
+
+    /**
+     * Returns the schema of the specified table
+     * @param tblname the table name
+     * @param tx the calling transaction
+     * @return schema of the specified table
+     */
+    public Schema getSchema(String tblname, Transaction tx) {
+        return mdm.getSchema(tblname, tx);
+    }
 }

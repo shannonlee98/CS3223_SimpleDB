@@ -1,5 +1,6 @@
 package simpledb.plan;
 
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.parse.QueryData;
 
@@ -18,4 +19,12 @@ public interface QueryPlanner {
     * @return a plan for that query
     */
    public Plan createPlan(QueryData data, Transaction tx);
+
+   /**
+    * Returns the schema of the specified table
+    * @param tblname the table name
+    * @param tx the calling transaction
+    * @return schema of the specified table
+    */
+   public Schema getSchema(String tblname, Transaction tx);
 }

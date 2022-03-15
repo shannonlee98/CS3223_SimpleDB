@@ -2,7 +2,11 @@ package simpledb.opt;
 
 import java.util.*;
 
+import simpledb.display.ExecutionPath;
+import simpledb.materialize.DistinctPlan;
+import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
+import simpledb.record.Schema;
 import simpledb.tx.Transaction;
 import simpledb.metadata.MetadataMgr;
 import simpledb.parse.QueryData;
@@ -29,33 +33,46 @@ public class HeuristicQueryPlanner implements QueryPlanner {
     * results in the smallest output.
     */
    public Plan createPlan(QueryData data, Transaction tx) {
-      
+
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
-         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
+         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm, data.isDistinct());
          tableplanners.add(tp);
       }
-      
+
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
-      
+
       // Step 3:  Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
          Plan p = getLowestJoinPlan(currentplan);
-         if (p != null)
+         if (p != null) {
             currentplan = p;
+         }
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
-      
-      // Step 4.  Project on the field names and return
-      Plan p = new ProjectPlan(currentplan, data.selectFields());
 
-      //Step 5: Add a sort plan if ordered
-      if (data.OrderByFields().size() > 0) {
-         p = new SortPlan(tx, p, data.OrderByFields());
+      // Step 4: Add a sort plan if ordered
+      if (!data.orderByFields().isEmpty()) {
+         currentplan = new SortPlan(tx, currentplan, data.orderByFields(), data.isDistinct());
       }
-      return p;
+
+      // Step 5: Add a group plan if there is aggregation or 'group by'
+      if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
+         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggregates(), data.isDistinct());
+      }
+
+      // Step 6:  Project on the field names and return
+      currentplan = new ProjectPlan(currentplan, data.fields());
+
+      // Step 7: Add a distinct plan if isDistinct is true
+      if (data.isDistinct()) {
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+      }
+
+      ExecutionPath.getInstance().print(currentplan.GetEC());
+      return currentplan;
    }
    
    private Plan getLowestSelectPlan() {
@@ -104,5 +121,15 @@ public class HeuristicQueryPlanner implements QueryPlanner {
    public void setPlanner(Planner p) {
       // for use in planning views, which
       // for simplicity this code doesn't do.
+   }
+
+   /**
+    * Returns the schema of the specified table
+    * @param tblname the table name
+    * @param tx the calling transaction
+    * @return schema of the specified table
+    */
+   public Schema getSchema(String tblname, Transaction tx) {
+      return mdm.getSchema(tblname, tx);
    }
 }

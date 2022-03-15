@@ -5,6 +5,8 @@ import simpledb.file.BlockId;
 import simpledb.query.*;
 import simpledb.tx.Transaction;
 
+import java.util.Arrays;
+
 /**
  * Provides the abstraction of an arbitrarily large array
  * of records.

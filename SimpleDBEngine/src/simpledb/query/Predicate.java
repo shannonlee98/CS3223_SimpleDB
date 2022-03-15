@@ -36,6 +36,15 @@ public class Predicate {
    }
 
    /**
+    * Modifies the predicate to be the set difference of
+    * itself and the specified predicate.
+    * @param pred the other predicate
+    */
+   public void differenceWith(Predicate pred) {
+      terms.removeAll(pred.terms);
+   }
+
+   /**
     * Returns true if the predicate evaluates to true
     * with respect to the specified scan.
     * @param s the scan
@@ -46,6 +55,17 @@ public class Predicate {
          if (!t.isSatisfied(s))
             return false;
       return true;
+   }
+
+   /**
+    * Returns a list of any fields that are in the predicate
+    * @return list of fields names in the predicate
+    */
+   public List<String> getFields() {
+      List<String> fields = new ArrayList<>();
+      for (Term t : terms)
+         fields.addAll(t.getFields());
+      return fields;
    }
 
    /** 
@@ -103,6 +123,34 @@ public class Predicate {
          return result;
    }
 
+   public Term getMostConstrainingTerm() {
+      Term notEqual = null;
+      Term lessMore = null;
+      Term lessMoreEqual = null;
+      for (Term t : terms) {
+         switch(t.getCondOp().getVal()) {
+            case equals:
+               return t;
+            case moreThan:
+            case lessThan:
+               lessMore = t;
+               break;
+            case moreThanOrEquals:
+            case lessThanOrEquals:
+               lessMoreEqual = t;
+               break;
+            default:
+               notEqual = t;
+         }
+      }
+
+      if (lessMore != null) return lessMore;
+      if (lessMoreEqual != null) return lessMoreEqual;
+      if (notEqual != null) return notEqual;
+
+      return null;
+   }
+
    /**
     * Determine if there is a term of the form "F=c"
     * where F is the specified field and c is some constant.
@@ -136,6 +184,44 @@ public class Predicate {
       }
       return null;
    }
+
+   /**
+    * Determine the conditional operator between two fields
+    * @param f1 the name of the first field
+    * @param f2 the name of the second field
+    */
+   public CondOp relationBetweenFields(String f1, String f2) {
+      //prioritise equals, after that which ever term comes first.
+      CondOp firstMatch = null;
+      for (Term t : terms) {
+         if (t.hasRelationBetweenField(f1, f2) && firstMatch == null) {
+            firstMatch = t.getCondOp();
+         } else if (t.hasRelationBetweenField(f1, f2) && t.getCondOp().getVal() == CondOp.types.equals) {
+            return t.getCondOp();
+         }
+      }
+
+      return firstMatch;
+   }
+
+//   /**
+//    * Determine if there is a term of the form "F1XF2"
+//    * where F1 is the specified field and F2 is another field.
+//    * If so, the method returns the name of that field.
+//    * If not, the method returns null.
+//    * @param f1 the name of one the field
+//    * @param f2 the name of the other field
+//    * @return the name of the other field, or null
+//    */
+//   public Predicate relationBetweenField(String f1, String f2) {
+//      Predicate result = new Predicate();
+//      for (Term t : terms) {
+//         if (t.relationBetweenField(f1, f2)) {
+//            result.terms.add(t);
+//         }
+//      }
+//      return result;
+//   }
 
    public String toString() {
       Iterator<Term> iter = terms.iterator();

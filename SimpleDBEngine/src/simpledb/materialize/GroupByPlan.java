@@ -1,6 +1,10 @@
 package simpledb.materialize;
 
 import java.util.*;
+
+import simpledb.display.ExecutionChain;
+import simpledb.display.Group;
+import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.record.Schema;
 import simpledb.plan.Plan;
@@ -27,12 +31,12 @@ public class GroupByPlan implements Plan {
     * @param aggfns the aggregation functions
     * @param tx the calling transaction
     */
-   public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
-      Map<String, Boolean> mapGroupfields = new HashMap<String, Boolean>();
+   public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns, boolean isDistinct) {
+      LinkedHashMap<String, Boolean> mapGroupfields = new LinkedHashMap<>();
       for (String field : groupfields) {
          mapGroupfields.put(field, true);
       }
-      this.p = new SortPlan(tx, p, mapGroupfields);
+      this.p = new SortPlan(tx, p, mapGroupfields, isDistinct);
       this.groupfields = groupfields;
       this.aggfns = aggfns;
       for (String fldname : groupfields)
@@ -101,5 +105,9 @@ public class GroupByPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public ExecutionChain GetEC() {
+      return new Group(this, p.GetEC(), groupfields, aggfns);
    }
 }

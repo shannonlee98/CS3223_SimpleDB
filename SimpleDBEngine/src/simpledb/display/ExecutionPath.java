@@ -33,4 +33,10 @@ public class ExecutionPath {
             System.out.println(output);
         }
     }
+
+    public void printScoreSeparator() {
+        if (scoring) {
+            System.out.println();
+        }
+    }
 }

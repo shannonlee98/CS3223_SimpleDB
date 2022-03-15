@@ -3,15 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/planner/IndexSelectPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/planner/IndexSelectPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/query/IndexJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/query/IndexJoinScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MergeJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MergeJoinScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SortScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SortScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinScan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/display/ExecutionPath.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/display/ExecutionPath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MergeJoinPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MergeJoinPlan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/MultibufferProductPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/MultibufferProductPlan.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/opt/TablePlanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/opt/TablePlanner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProductScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProductScan.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

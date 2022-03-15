@@ -119,6 +119,7 @@ class TablePlanner {
                     ExecutionPath.getInstance().printScoring(jp.GetEC());
                 }
             }
+            ExecutionPath.getInstance().printScoreSeparator();
         } else {
             p = JoinPlans.get(joinMode);
         }

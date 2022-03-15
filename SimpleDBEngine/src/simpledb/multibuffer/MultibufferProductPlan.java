@@ -61,11 +61,18 @@ public class MultibufferProductPlan implements Plan {
     */
    public int blocksAccessed() {
       // this guesses at the # of chunks
-      int avail = tx.availableBuffs();
+      int avail = Math.min(tx.availableBuffs(), 1);
       int size = new MaterializePlan(tx, rhs).blocksAccessed();
       int numchunks = (int) Math.ceil(size * 1.0 / avail);
-      return rhs.blocksAccessed() +
-            (lhs.blocksAccessed() * numchunks);
+
+      Plan mpLhs = new MaterializePlan(tx, lhs);
+      Plan mpRhs = new MaterializePlan(tx, rhs);
+
+      int carryoverCost = Math.max(lhs.blocksAccessed() +
+              rhs.blocksAccessed() - mpLhs.blocksAccessed() - mpRhs.blocksAccessed(), 0);
+
+      return mpLhs.blocksAccessed() +
+            (mpRhs.blocksAccessed() * numchunks) + carryoverCost;
    }
 
    /**

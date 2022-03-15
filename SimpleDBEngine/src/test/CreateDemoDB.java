@@ -1057,6 +1057,10 @@ public class CreateDemoDB {
             planner.executeUpdate(qry, tx);
             System.out.println("Table COURSE created.");
 
+            qry = "create index cid_idx on course(cid) using hash";
+            planner.executeUpdate(qry, tx);
+            System.out.println("Created index cid_idx in course");
+
             qry = "insert into COURSE(CId, Title, DeptId) values ";
             String[] coursevals = {
                     "(10, 'db systems', 10)",

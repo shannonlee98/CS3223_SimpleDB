@@ -25,7 +25,6 @@ public class IndexSelectPlan implements Plan {
     * @param p the input table
     * @param ii information about the index
     * @param val the selection constant
-    * @param tx the calling transaction 
     */
    public IndexSelectPlan(Plan p, IndexInfo ii, Constant val) {
       this.p = p;

@@ -7,6 +7,7 @@ package simpledb.query;
  */
 public class ProductScan implements Scan {
    private Scan s1, s2;
+   private boolean isEmpty;
 
    /**
     * Create a product scan having the two underlying scans.
@@ -28,7 +29,7 @@ public class ProductScan implements Scan {
     */
    public void beforeFirst() {
       s1.beforeFirst();
-      s1.next();
+      isEmpty = !s1.next();
       s2.beforeFirst();
    }
 
@@ -41,6 +42,9 @@ public class ProductScan implements Scan {
     * @see simpledb.query.Scan#next()
     */
    public boolean next() {
+      if (isEmpty) {
+         return false;
+      }
       if (s2.next())
          return true;
       else {

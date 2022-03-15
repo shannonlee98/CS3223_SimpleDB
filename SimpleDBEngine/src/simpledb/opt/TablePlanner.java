@@ -110,7 +110,8 @@ class TablePlanner {
         if (joinMode.toString().equals("cost")) {
             int cost = Integer.MAX_VALUE;
             for (Plan jp : JoinPlans.values()) {
-                if (jp != null && jp.blocksAccessed() < cost) {
+                if (jp != null && jp.blocksAccessed() < cost &&
+                        !(jp instanceof MultibufferProductPlan)) {
                     p = jp;
                     cost = jp.blocksAccessed();
                 }
@@ -142,7 +143,7 @@ class TablePlanner {
             Constant val = mypred.equatesWithConstant(fldname);
             if (val != null) {
                 IndexInfo ii = indexes.get(fldname);
-                System.out.println("index on " + fldname + " used");
+//                System.out.println("index on " + fldname + " used");
                 return new IndexSelectPlan(myplan, ii, val);
             }
         }

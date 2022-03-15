@@ -19,6 +19,7 @@ public class BlockJoinScan implements Scan {
    private Layout layout;
    private int chunksize, nextblknum, filesize;
    private CondOp condOp;
+   private boolean isEmpty;
 
 
    /**
@@ -51,7 +52,8 @@ public class BlockJoinScan implements Scan {
    public void beforeFirst() {
       nextblknum = 0;
       useNextChunk();
-      inner.next();
+      inner.beforeFirst();
+      isEmpty = !inner.next();
    }
    
    /**
@@ -63,6 +65,10 @@ public class BlockJoinScan implements Scan {
     * @see Scan#next()
     */
    public boolean next() {
+      if (isEmpty) {
+         return false;
+      }
+
       while(true){
          //no matter what we advance outer.
          boolean outerhasMore = outer.next();
@@ -76,13 +82,18 @@ public class BlockJoinScan implements Scan {
                   return false;
                }
                //if there is still a next chunk, reset both inner and outer
-               outer.next();
+
+               //check if next chunk is empty
+               if (!outer.next()) return false;
+
                inner.beforeFirst();
-               inner.next();
+
+               //check if inner is empty
+               if (!inner.next()) return false;
             } else {
             //outer has no more but inner has more, reset outer
                outer.beforeFirst();
-               outer.next();
+               if (!outer.next()) return false;
             }
          }
 
@@ -158,6 +169,7 @@ public class BlockJoinScan implements Scan {
       if (end >= filesize)
          end = filesize - 1;
       outer = new ChunkScan(tx, filename, layout, nextblknum, end);
+      outer.beforeFirst();
       nextblknum = end + 1;
       return true;
    }

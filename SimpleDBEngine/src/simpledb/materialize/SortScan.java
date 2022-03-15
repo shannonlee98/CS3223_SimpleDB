@@ -18,7 +18,8 @@ public class SortScan implements Scan {
    private RecordComparator comp;
    private boolean hasmore1, hasmore2=false;
    private List<RID> savedposition;
-   
+   private boolean isEmpty;
+
    /**
     * Create a sort scan, given a list of 1 or 2 runs.
     * If there is only 1 run, then s2 will be null and
@@ -28,6 +29,7 @@ public class SortScan implements Scan {
     */
    public SortScan(List<TempTable> runs, RecordComparator comp) {
       this.comp = comp;
+      isEmpty = runs.size() == 0;
       if (runs.size() > 0) {
          s1 = (UpdateScan) runs.get(0).open();
          hasmore1 = s1.next();
@@ -47,6 +49,7 @@ public class SortScan implements Scan {
     */
    public void beforeFirst() {
       currentscan = null;
+      if (s1 == null) return;
       s1.beforeFirst();
       hasmore1 = s1.next();
       if (s2 != null) {
@@ -63,6 +66,9 @@ public class SortScan implements Scan {
     * @see simpledb.query.Scan#next()
     */
    public boolean next() {
+      if (isEmpty)
+         return false;
+
       if (currentscan != null) {
          if (currentscan == s1)
             hasmore1 = s1.next();

@@ -24,6 +24,10 @@ public class CreateDemoDB {
             planner.executeUpdate(qry, tx);
             System.out.println("Created index major_idx in student table");
 
+            qry = "create index sid_idx on student(sid) using hash";
+            planner.executeUpdate(qry, tx);
+            System.out.println("Created index sid_idx in student table");
+
             qry = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
             //Problem names: D'arcy, Miof, Terri-jo
             String[] studvals = {"(1,'Aurthur',30,2006)",

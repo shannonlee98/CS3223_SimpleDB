@@ -33,6 +33,7 @@ public class GraceHashJoinScan implements Scan {
     private int keyIterator = 0;
 
     private Map<Constant, ArrayList<Map<String, Constant>>> hashTable;
+    private boolean isEmpty;
     //there is a successful match but how can we find the
     //scan in s1.
 
@@ -87,7 +88,8 @@ public class GraceHashJoinScan implements Scan {
         s2 = partitions2.get(currentParition).open();
         s2.beforeFirst();
         if (!s2.next()) {
-            return nextPartition();
+            isEmpty = !nextPartition();
+            return !isEmpty;
         }
 
         keyIterator = 0;
@@ -106,6 +108,11 @@ public class GraceHashJoinScan implements Scan {
             hashTable.get(s1.getVal(joinfield1)).add(row);
         }
         s1.close();
+
+        if (hashTable.isEmpty()) {
+            isEmpty = !nextPartition();
+            return !isEmpty;
+        }
 
         return true;
     }
@@ -134,6 +141,9 @@ public class GraceHashJoinScan implements Scan {
      */
 
     public boolean next() {
+        if (isEmpty) {
+            return false;
+        }
         while (true) {
             //first check if there are duplicate key values in our hashtable
             if (hashTable.keySet().contains(s2.getVal(joinfield2)) &&

@@ -15,7 +15,7 @@ import java.util.*;
 public class Planner {
    private QueryPlanner qplanner;
    private UpdatePlanner uplanner;
-   
+
    public Planner(QueryPlanner qplanner, UpdatePlanner uplanner) {
       this.qplanner = qplanner;
       this.uplanner = uplanner;
@@ -70,8 +70,14 @@ public class Planner {
       else
          return 0;
    }
- 
-   // SimpleDB does not verify queries, although it should.
+
+   /**
+    * Checks if the entire query is valid. Gets schema from all
+    * tables selected and checks if the fields listed in the query
+    * are in the schema
+    * @param data data of the query
+    * @param tx the transaction
+    */
    private void verifyQuery(QueryData data, Transaction tx) {
       Collection<String> tables = data.tables();
       Schema schema = new Schema();
@@ -83,24 +89,75 @@ public class Planner {
       verifyFields(orderFields.keySet(), schema);
       verifyFields(data.groupByFields(), schema);
       verifyFields(data.aggregatesFields(), schema);
-      verifySelectFields(data.fields(), schema, data.aggregates());
+      verifySelectFields(data, schema);
 
       Predicate pred = data.pred();
       verifyFields(pred.getFields(), schema);
    }
 
+   /**
+    * Checks if each field in the collection are in the schema,
+    * throws error if it is not found
+    * @param fields Collection of fields to be verified
+    * @param schema Schema of the all fields from selected tables
+    */
    private void verifyFields(Collection<String> fields, Schema schema) {
       for (String fldname : fields)
-         if (!schema.hasField(fldname))
+         if (!schema.hasField(fldname) && !fldname.equals("*"))
             throw new BadSyntaxException("Field '" + fldname + "' does not exist");
    }
 
-   private void verifySelectFields(Collection<String> fields, Schema schema, List<AggregationFn> aggregates){
-      for (String fldname : fields)
-         if (!schema.hasField(fldname))
-            for (AggregationFn aggrFn : aggregates)
-               if (!fldname.equals(aggrFn.fieldName()))
-                  throw new BadSyntaxException("Field '" + fldname + "' does not exist");
+   /**
+    * Checks if each field is in the schema or in the aggregation
+    * functions. Throws error if the field is one that is already
+    * used in the aggregation function. Throws error if the field
+    * is not in the schema and also not the column name of any
+    * aggregation function
+    * @param data data of the query
+    * @param schema Schema of the all fields from selected tables
+    */
+   private void verifySelectFields(QueryData data, Schema schema){
+      for (String fldname : data.fields()) {
+         if (fldname.equals("*")) {
+            data.addFields(schema.fields());
+            continue;
+         }
+         if (isAggregationField(data.aggregates(), fldname))
+            throw new BadSyntaxException("Field '" + fldname + "' is invalid because it is aggregated");
+         if (!schema.hasField(fldname) && !isAggregationFunction(data.aggregates(), fldname)) {
+            throw new BadSyntaxException("Field '" + fldname + "' does not exist");
+         }
+      }
+   }
+
+   /**
+    * Checks if the field name is already used in any
+    * aggregation function
+    * @param aggregates List of aggregate functions
+    * @param fldname Field name to be verified
+    * @return True if the field is found in the aggregation
+    * function list, false otherwise
+    */
+   private boolean isAggregationField(List<AggregationFn> aggregates, String fldname) {
+      for (AggregationFn aggrFn : aggregates)
+         if (fldname.equals(aggrFn.field()))
+            return true;
+      return false;
+   }
+
+   /**
+    * Checks if the field name is a column name of any
+    * aggregation functions
+    * @param aggregates List of aggregate functions
+    * @param fldname Field name to be verified
+    * @return True if the field is a column name of any
+    * aggregation function, false otherwise
+    */
+   private boolean isAggregationFunction(List<AggregationFn> aggregates, String fldname) {
+      for (AggregationFn aggrFn : aggregates)
+         if (fldname.equals(aggrFn.fieldName()))
+            return true;
+      return false;
    }
 
    // SimpleDB does not verify updates, although it should.

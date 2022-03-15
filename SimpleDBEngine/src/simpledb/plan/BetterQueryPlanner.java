@@ -25,7 +25,7 @@ public class BetterQueryPlanner implements QueryPlanner {
     */
    public Plan createPlan(QueryData data, Transaction tx) {
       //Step 1: Create a plan for each mentioned table or view.
-     List<Plan> plans = new ArrayList<Plan>();
+     List<Plan> plans = new ArrayList<>();
       for (String tblname : data.tables()) {
          String viewdef = mdm.getViewDef(tblname, tx);
          if (viewdef != null) { // Recursively plan the view.
@@ -57,6 +57,12 @@ public class BetterQueryPlanner implements QueryPlanner {
       return p;
    }
 
+    /**
+     * Returns the schema of the specified table
+     * @param tblname the table name
+     * @param tx the calling transaction
+     * @return schema of the specified table
+     */
     public Schema getSchema(String tblname, Transaction tx) {
         return mdm.getSchema(tblname, tx);
     }

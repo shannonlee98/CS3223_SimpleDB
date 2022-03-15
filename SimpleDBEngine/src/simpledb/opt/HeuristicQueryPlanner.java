@@ -52,23 +52,21 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
-      
-      // Step 4.  Project on the field names and return
-//      Plan p = new ProjectPlan(currentplan, data.fields());
 
-      // Step 6: Add a sort plan if ordered
-      if (data.orderByFields().size() > 0) {
+      // Step 4: Add a sort plan if ordered
+      if (!data.orderByFields().isEmpty()) {
          currentplan = new SortPlan(tx, currentplan, data.orderByFields(), data.isDistinct());
       }
 
-      // Step 7: Add a group plan if there is aggregation or 'group by'
+      // Step 5: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggregates(), data.isDistinct());
       }
 
+      // Step 6:  Project on the field names and return
       currentplan = new ProjectPlan(currentplan, data.fields());
 
-      // Step 5: Add a distinct plan if isDistinct is true
+      // Step 7: Add a distinct plan if isDistinct is true
       if (data.isDistinct()) {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
       }
@@ -125,6 +123,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // for simplicity this code doesn't do.
    }
 
+   /**
+    * Returns the schema of the specified table
+    * @param tblname the table name
+    * @param tx the calling transaction
+    * @return schema of the specified table
+    */
    public Schema getSchema(String tblname, Transaction tx) {
       return mdm.getSchema(tblname, tx);
    }

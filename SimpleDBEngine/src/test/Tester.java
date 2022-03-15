@@ -16,23 +16,21 @@ public class Tester {
 		 Planner planner = db.planner();
 
          // analogous to the statement
-         String qry = "select max(sid from student order by";
-//                    + "set MajorId=10 "
-//                    + "where SName > 'art'";
+//         String qry = "select count(sname), sname from student";
+//         String qry = "select * from student";
+         String qry = "select count(*) from student";
 //
          Plan p = planner.createQueryPlan(qry, tx);
 
          // analogous to the result set
          Scan s = p.open();
 
-         System.out.println("success");
-//         System.out.println("Name\tMajor");
-//         while (s.next()) {
-//             String sname = s.getString("sname"); //SimpleDB stores field names
-//             int dname = s.getInt("gradyear"); //in lower case
-//             System.out.println(sname + "\t" + dname);
-//             System.out.println(dname);
-//         }
+//         System.out.println("success");
+         System.out.println("Count of *");
+         while (s.next()) {
+             int count = s.getInt("countof*"); //in lower case
+             System.out.println(count);
+         }
 		 
 //		 String qry = "create index majoridx "
 //				 	+ "on STUDENT(MajorID) using hash";

@@ -79,33 +79,17 @@ public class Parser {
         List<AggregationFn> aggregates = new ArrayList<>();
 
         while (true) {
-            String field;
             if (lex.matchAggregate()) {
-                String aggregate = aggregate();
-                try {
-                    lex.eatDelim('(');
-                } catch (BadSyntaxException e) {
-                    throw new BadSyntaxException("Delimiter'(' expected in aggregate function");
-                }
-                if (lex.matchDelim(')'))
-                    throw new BadSyntaxException("Aggregate function cannot be empty");
-                field = field();
-                try {
-                    lex.eatDelim(')');
-                } catch (BadSyntaxException e) {
-                    throw new BadSyntaxException("Delimiter')' expected in aggregate function");
-                }
-                AggregationFn aggrFn = getAggregateFn(aggregate, field);
+                AggregationFn aggrFn = getAggregateFn();
                 aggregates.add(aggrFn);
                 fields.add(aggrFn.fieldName());
-            } else {
-                try {
-                    field = field();
-                    fields.add(field);
-                } catch (BadSyntaxException e) {
-                    throw new BadSyntaxException("Field expected in select clause");
-                }
-            }
+            } else if (lex.matchDelim('*')) {
+                lex.eatDelim('*');
+                fields.add("*");
+            } else if (lex.matchId())
+                fields.add(field());
+            else
+                throw new BadSyntaxException("Unknown select field");
 
             if (!lex.matchDelim(','))
                 break;
@@ -144,7 +128,12 @@ public class Parser {
 
     private List<String> selectList() {
         List<String> list = new ArrayList<>();
-        list.add(field());
+        if (lex.matchDelim('*')) {
+            lex.eatDelim('*');
+            list.add("*");
+        }
+        if (lex.matchId())
+            list.add(field());
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
             list.addAll(selectList());
@@ -152,32 +141,40 @@ public class Parser {
         return list;
     }
 
-    private AggregationFn getAggregateFn(String aggregate, String field) {
-        AggregationFn aggr = null;
-        switch (aggregate.toLowerCase()) {
-            case "avg": {
-                aggr = new AvgFn(field);
-                break;
-            }
-            case "count": {
-                aggr = new CountFn(field);
-                break;
-            }
-            case "max": {
-                aggr = new MaxFn(field);
-                break;
-            }
-            case "min": {
-                aggr = new MinFn(field);
-                break;
-            }
-            case "sum": {
-                aggr = new SumFn(field);
-                break;
-            }
-        }
 
-        return aggr;
+    private AggregationFn getAggregateFn() {
+        String aggregate = aggregate();
+        try {
+            lex.eatDelim('(');
+        } catch (BadSyntaxException e) {
+            throw new BadSyntaxException("Delimiter'(' expected in aggregate function");
+        }
+        List<String> fields = selectList();
+        try {
+            lex.eatDelim(')');
+        } catch (BadSyntaxException e) {
+            throw new BadSyntaxException("Delimiter')' expected in aggregate function");
+        }
+        if (fields.size() < 1)
+            throw new BadSyntaxException("Aggregation function cannot be empty");
+        if (fields.size() > 1)
+            throw new BadSyntaxException("Too many arguments in aggregation function");
+
+        String field = fields.get(0);
+        switch (aggregate.toLowerCase()) {
+            case "avg":
+                return new AvgFn(field);
+            case "count":
+                return new CountFn(field);
+            case "max":
+                return new MaxFn(field);
+            case "min":
+                return new MinFn(field);
+            case "sum":
+                return new SumFn(field);
+            default:
+                throw new BadSyntaxException("Aggregation function not recognised");
+        }
     }
 
     private LinkedHashMap<String, Boolean> orderByList() {
@@ -221,7 +218,7 @@ public class Parser {
     }
 
     private Collection<String> tableList() {
-        Collection<String> L = new ArrayList<String>();
+        Collection<String> L = new ArrayList<>();
         L.add(lex.eatId());
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
@@ -284,7 +281,7 @@ public class Parser {
     }
 
     private List<String> fieldList() {
-        List<String> L = new ArrayList<String>();
+        List<String> L = new ArrayList<>();
         L.add(field());
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
@@ -294,7 +291,7 @@ public class Parser {
     }
 
     private List<Constant> constList() {
-        List<Constant> L = new ArrayList<Constant>();
+        List<Constant> L = new ArrayList<>();
         L.add(constant());
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');

@@ -24,7 +24,6 @@ public class QueryData {
     */
    public QueryData(boolean isDistinct, List<String> fields, List<AggregationFn> aggregates, Collection<String> tables, Predicate pred,
                     LinkedHashMap<String, Boolean> orderByFields, List<String> groupByFields) {
-//      fields.addAll(groupByFields);
       this.isDistinct = isDistinct;
       this.fields = fields;
       this.aggregates = aggregates;
@@ -34,6 +33,10 @@ public class QueryData {
       this.groupByFields = groupByFields;
    }
 
+   /**
+    * Returns whether the query has distinct.
+    * @return true if query has the distinct keyword, false otherwise
+    */
    public boolean isDistinct() { return isDistinct; }
    
    /**
@@ -49,6 +52,14 @@ public class QueryData {
     * @return a list of pairs containing aggregate and field names
     */
    public List<AggregationFn> aggregates() { return aggregates; }
+
+   /**
+    * Add fields to select fields
+    * @param fields list of fields to add
+    */
+   public void addFields(List<String> fields) {
+      this.fields = fields;
+   }
 
    /**
     * Returns the aggregates mentioned in the select clause.

@@ -43,6 +43,8 @@ public class GroupByPlan implements Plan {
         for (String fldname : groupfields)
             sch.add(fldname, p.schema());
 
+        // add the aggregate fields based on their innate
+        // types and type of the field they are aggregating
         for (AggregationFn fn : aggfns) {
             if (fn.isAlwaysInteger()) {
                 sch.addIntField(fn.fieldName());
@@ -119,7 +121,7 @@ public class GroupByPlan implements Plan {
         return sch;
     }
 
-        /**
+    /**
      * Returns the schema of the index join.
      *
      * @see Plan#getChain()

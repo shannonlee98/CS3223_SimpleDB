@@ -7,10 +7,8 @@ import simpledb.query.Term;
 import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 
-/** 
- * The Scan class for the multi-buffer version of the
- * <i>product</i> operator.
- * @author Edward Sciore
+/**
+ * The Scan class for the <i>blockjoin</i> operator.
  */
 public class BlockJoinScan implements Scan {
    private Transaction tx;
@@ -23,10 +21,14 @@ public class BlockJoinScan implements Scan {
 
 
    /**
-    * Creates the scan class for the product of the LHS scan and a table.
-    * @param innerscan the LHS scan
-    * @param layout the metadata for the RHS table
+    * Creates a blockjoin scan class for the innerscan and the scan of the temp table.
     * @param tx the current transaction
+    * @param innerscan the inner scan
+    * @param tblname the temp table name with outer scan
+    * @param layout the metadata for the outer scan's table
+    * @param joinfieldOuter the joinfield of the outer table
+    * @param condOp the conditional operator between the joinfields
+    * @param joinfieldInner the joinfield of the inner table
     */
    public BlockJoinScan(Transaction tx, Scan innerscan, String tblname, Layout layout,
                         String joinfieldOuter, CondOp condOp, String joinfieldInner) {
@@ -45,8 +47,8 @@ public class BlockJoinScan implements Scan {
    
    /**
     * Positions the scan before the first record.
-    * That is, the LHS scan is positioned at its first record,
-    * and the RHS scan is positioned before the first record of the first chunk.
+    * That is, the inner scan is positioned at its first record,
+    * and the outer scan is positioned before the first record of the first chunk.
     * @see Scan#beforeFirst()
     */
    public void beforeFirst() {
@@ -59,8 +61,8 @@ public class BlockJoinScan implements Scan {
    /**
     * Moves to the next record in the current scan.
     * If there are no more records in the current chunk,
-    * then move to the next LHS record and the beginning of that chunk.
-    * If there are no more LHS records, then move to the next chunk
+    * then move to the next inner record and the beginning of that chunk.
+    * If there are no more outer-chunk records, then move to the next chunk
     * and begin again.
     * @see Scan#next()
     */

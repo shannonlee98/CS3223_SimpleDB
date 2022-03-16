@@ -21,6 +21,7 @@ public class MergeJoinScan implements Scan {
      * @param s1       the LHS sorted scan
      * @param s2       the RHS sorted scan
      * @param fldname1 the LHS join field
+     * @param condOp   the conditional operator of the fields
      * @param fldname2 the RHS join field
      */
     public MergeJoinScan(Scan s1, SortScan s2, String fldname1, CondOp condOp, String fldname2) {

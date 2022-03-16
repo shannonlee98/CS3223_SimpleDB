@@ -89,7 +89,7 @@ public class Parser {
             } else if (lex.matchId())
                 fields.add(field());
             else
-                throw new BadSyntaxException("Unknown select field");
+                throw new BadSyntaxException("Error in select field");
 
             if (!lex.matchDelim(','))
                 break;
@@ -144,10 +144,15 @@ public class Parser {
 
     private AggregationFn getAggregateFn() {
         String aggregate = aggregate();
+        boolean isDistinct = false;
         try {
             lex.eatDelim('(');
         } catch (BadSyntaxException e) {
             throw new BadSyntaxException("Delimiter'(' expected in aggregate function");
+        }
+        if (lex.matchKeyword("distinct")) {
+            isDistinct = true;
+            lex.eatKeyword("distinct");
         }
         List<String> fields = selectList();
         try {
@@ -163,15 +168,15 @@ public class Parser {
         String field = fields.get(0);
         switch (aggregate.toLowerCase()) {
             case "avg":
-                return new AvgFn(field);
+                return new AvgFn(field, isDistinct);
             case "count":
-                return new CountFn(field);
+                return new CountFn(field, isDistinct);
             case "max":
-                return new MaxFn(field);
+                return new MaxFn(field, isDistinct);
             case "min":
-                return new MinFn(field);
+                return new MinFn(field, isDistinct);
             case "sum":
-                return new SumFn(field);
+                return new SumFn(field, isDistinct);
             default:
                 throw new BadSyntaxException("Aggregation function not recognised");
         }
@@ -219,7 +224,8 @@ public class Parser {
 
     private Collection<String> tableList() {
         Collection<String> L = new ArrayList<>();
-        L.add(lex.eatId());
+        if (lex.matchId())
+            L.add(lex.eatId());
         if (lex.matchDelim(',')) {
             lex.eatDelim(',');
             L.addAll(tableList());

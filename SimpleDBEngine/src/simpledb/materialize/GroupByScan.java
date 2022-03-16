@@ -91,6 +91,8 @@ public class GroupByScan implements Scan {
       for (AggregationFn fn : aggfns)
          if (fn.fieldName().equals(fldname))
          return fn.value();
+//      if (fields.contains(fldname))
+//         return groupval.getVal(fldname);
       throw new RuntimeException("field " + fldname + " not found.");
    }
    

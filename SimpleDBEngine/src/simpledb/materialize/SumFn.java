@@ -3,19 +3,25 @@ package simpledb.materialize;
 import simpledb.query.Constant;
 import simpledb.query.Scan;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The <i>sum</i> aggregation function.
  */
 public class SumFn implements AggregationFn {
    private String fldname;
+   private boolean isDistinct;
+   private Set<Integer> values = new HashSet<>();
    private int sum;
 
    /**
     * Create a count aggregation function for the specified field.
     * @param fldname the name of the aggregated field
     */
-   public SumFn(String fldname) {
+   public SumFn(String fldname, boolean isDistinct) {
       this.fldname = fldname;
+      this.isDistinct = isDistinct;
    }
    
    /**
@@ -28,6 +34,7 @@ public class SumFn implements AggregationFn {
     */
    public void processFirst(Scan s) {
       sum = s.getInt(fldname);
+      values.add(sum);
    }
    
    /**
@@ -37,6 +44,7 @@ public class SumFn implements AggregationFn {
     */
    public void processNext(Scan s) {
       sum += s.getInt(fldname);
+      values.add(s.getInt(fldname));
    }
    
    /**
@@ -61,6 +69,11 @@ public class SumFn implements AggregationFn {
     * @see AggregationFn#value()
     */
    public Constant value() {
+      if (isDistinct) {
+         sum = 0;
+         for (Integer val : values)
+            sum += val;
+      }
       return new Constant(sum);
    }
 

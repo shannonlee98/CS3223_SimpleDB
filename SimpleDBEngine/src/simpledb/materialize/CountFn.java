@@ -2,20 +2,26 @@ package simpledb.materialize;
 
 import simpledb.query.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The <i>count</i> aggregation function.
  * @author Edward Sciore
  */
 public class CountFn implements AggregationFn {
    private String fldname;
+   private boolean isDistinct;
+   private Set<Constant> values = new HashSet<>();
    private int count;
    
    /**
     * Create a count aggregation function for the specified field.
     * @param fldname the name of the aggregated field
     */
-   public CountFn(String fldname) {
+   public CountFn(String fldname, boolean isDistinct) {
       this.fldname = fldname;
+      this.isDistinct = isDistinct;
    }
    
    /**
@@ -28,6 +34,8 @@ public class CountFn implements AggregationFn {
     */
    public void processFirst(Scan s) {
       count = 1;
+      if (!fldname.equals("*"))
+         values.add(s.getVal(fldname));
    }
    
    /**
@@ -38,6 +46,8 @@ public class CountFn implements AggregationFn {
     */
    public void processNext(Scan s) {
       count++;
+      if (!fldname.equals("*"))
+         values.add(s.getVal(fldname));
    }
    
    /**
@@ -62,7 +72,7 @@ public class CountFn implements AggregationFn {
     * @see simpledb.materialize.AggregationFn#value()
     */
    public Constant value() {
-      return new Constant(count);
+      return isDistinct ? new Constant(values.size()) : new Constant(count);
    }
 
    /**

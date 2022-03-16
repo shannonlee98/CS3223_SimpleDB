@@ -80,6 +80,8 @@ public class Planner {
     */
    private void verifyQuery(QueryData data, Transaction tx) {
       Collection<String> tables = data.tables();
+      if (tables.size() == 0)
+         throw new BadSyntaxException("Table list is empty");
       Schema schema = new Schema();
       for (String tblname : tables) {
          schema.addAll(qplanner.getSchema(tblname, tx));
@@ -118,16 +120,23 @@ public class Planner {
     */
    private void verifySelectFields(QueryData data, Schema schema){
       for (String fldname : data.fields()) {
-         if (fldname.equals("*")) {
-            data.addFields(schema.fields());
+         if (fldname.equals("*"))
             continue;
-         }
-         if (isAggregationField(data.aggregates(), fldname))
-            throw new BadSyntaxException("Field '" + fldname + "' is invalid because it is aggregated");
-         if (!schema.hasField(fldname) && !isAggregationFunction(data.aggregates(), fldname)) {
+         if (isAggregationFunction(data.aggregates(), fldname))
+            continue;
+         if (!schema.hasField(fldname)) {
             throw new BadSyntaxException("Field '" + fldname + "' does not exist");
          }
+         if (!data.aggregates().isEmpty() && !hasGroupField(data, fldname))
+            throw new BadSyntaxException("Field '" + fldname + "' should be included in group by clause");
       }
+   }
+
+   private boolean hasGroupField(QueryData data, String fldname) {
+      for (String group : data.groupByFields())
+         if (group.equals(fldname))
+            return true;
+      return false;
    }
 
    /**

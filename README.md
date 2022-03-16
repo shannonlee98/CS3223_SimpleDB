@@ -1,8 +1,38 @@
 ### Bonus Done:
-Created Query Optimiser to decide which join to use.
 
-### Plan to do:
-Implement error-checking for queries
+####Created Query Optimiser to decide which join to use.
+
+#### Implement select all
+`select * from student`  
+`select count(*) from student`  
+`select *, count(sname), count(*) from student group by gradyear`
+
+#### Implement error-checking for queries:
+Below are example queries which will trigger the error-checking exceptions
+
+Missing table:  
+`select sname from where majorid = 20`
+
+Table doesn't exist:  
+`select sname from ufo`  
+
+Missing fields:  
+`select from student`  
+
+Field doesn't exist:  
+`select alien from student`  
+`select sname from student where alien > 100`  
+`select sname from student order by alien`  
+`select count(sname) from student group by alien`  
+
+Wrong number of arguments in aggregation function:  
+`select count() from student`   
+`select count(sname, gradyear) from student`
+
+Selecting field without including it in the group by clause when there are aggregate functions:  
+`select sname, count(sname) from student`
+
+
 
 ### Test Plan:
 create test cases to test all join algorithms (where each join algorithm is prefered)

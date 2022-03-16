@@ -3,11 +3,16 @@ package simpledb.materialize;
 import simpledb.query.Constant;
 import simpledb.query.Scan;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The <i>avg</i> aggregation function.
  */
 public class AvgFn implements AggregationFn {
    private String fldname;
+   private boolean isDistinct;
+   private Set<Integer> values = new HashSet<>();
    private int sum;
    private int count;
 
@@ -15,8 +20,9 @@ public class AvgFn implements AggregationFn {
     * Create a avg aggregation function for the specified field.
     * @param fldname the name of the aggregated field
     */
-   public AvgFn(String fldname) {
+   public AvgFn(String fldname, boolean isDistinct) {
       this.fldname = fldname;
+      this.isDistinct = isDistinct;
    }
    
    /**
@@ -31,6 +37,7 @@ public class AvgFn implements AggregationFn {
    public void processFirst(Scan s) {
       sum = s.getInt(fldname);
       count = 1;
+      values.add(sum);
    }
    
    /**
@@ -42,6 +49,7 @@ public class AvgFn implements AggregationFn {
    public void processNext(Scan s) {
       sum += s.getInt(fldname);
       count ++;
+      values.add(s.getInt(fldname));
    }
    
    /**
@@ -66,6 +74,12 @@ public class AvgFn implements AggregationFn {
     * @see AggregationFn#value()
     */
    public Constant value() {
+      if (isDistinct) {
+         sum = 0;
+         count = values.size();
+         for (int val : values)
+            sum += val;
+      }
       return new Constant(sum/count);
    }
 

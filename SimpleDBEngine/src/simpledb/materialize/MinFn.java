@@ -9,14 +9,16 @@ import simpledb.query.Scan;
  */
 public class MinFn implements AggregationFn {
    private String fldname;
+   private boolean isDistinct;
    private Constant val;
 
    /**
     * Create a min aggregation function for the specified field.
     * @param fldname the name of the aggregated field
     */
-   public MinFn(String fldname) {
+   public MinFn(String fldname, boolean isDistinct) {
       this.fldname = fldname;
+      this.isDistinct = isDistinct;
    }
    
    /**

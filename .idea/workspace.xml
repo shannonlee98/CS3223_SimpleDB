@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="">
+    <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="Implement select *">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/opt/TablePlanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/opt/TablePlanner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/CondOp.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/CondOp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Term.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Term.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/AvgFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/AvgFn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/CountFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/CountFn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/GroupByScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/GroupByScan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MaxFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MaxFn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MinFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MinFn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SumFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SumFn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProjectScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProjectScan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +36,13 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="25ENQZxzktF5MDEGEBjLV6iQ9um" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -34,6 +53,10 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
@@ -44,20 +67,7 @@
       <recent name="simpledb.materialize" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.SimpleIJ">
-    <configuration name="AggregateTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="simpledb.materialize.AggregateTest" />
-      <module name="SimpleDBEngine" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="simpledb.materialize.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Tester">
     <configuration name="CreateDemoDB" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.CreateDemoDB" />
       <module name="SimpleDBEngine" />
@@ -71,12 +81,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GroupByTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="simpledb.materialize.GroupByTest" />
+    <configuration name="CreateStudentDB" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="test.CreateStudentDB" />
       <module name="SimpleDBEngine" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="simpledb.materialize.*" />
+          <option name="PATTERN" value="test.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -110,13 +120,26 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Tester" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="test.Tester" />
+      <module name="SimpleDBEngine" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.SimpleIJ" />
+        <item itemvalue="Application.Tester" />
         <item itemvalue="Application.CreateDemoDB" />
-        <item itemvalue="Application.GroupByTest" />
-        <item itemvalue="Application.AggregateTest" />
         <item itemvalue="Application.IndexJoinTest" />
+        <item itemvalue="Application.CreateStudentDB" />
       </list>
     </recent_temporary>
   </component>
@@ -129,7 +152,8 @@
       <option name="presentableId" value="Default" />
       <updated>1645088271680</updated>
       <workItem from="1645088272932" duration="1447000" />
-      <workItem from="1647413573633" duration="21479000" />
+      <workItem from="1647394027880" duration="1223000" />
+      <workItem from="1647413573633" duration="5145000" />
     </task>
     <servers />
   </component>
@@ -146,19 +170,18 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java</url>
-          <line>67</line>
+          <line>70</line>
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java</url>
-          <line>86</line>
+          <line>89</line>
           <option name="timeStamp" value="39" />
         </line-breakpoint>
       </breakpoints>

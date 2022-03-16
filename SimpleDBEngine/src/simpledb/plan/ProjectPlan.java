@@ -1,5 +1,6 @@
 package simpledb.plan;
 
+import java.util.Arrays;
 import java.util.List;
 
 import simpledb.display.ExecutionChain;
@@ -23,8 +24,13 @@ public class ProjectPlan implements Plan {
     */
    public ProjectPlan(Plan p, List<String> fieldlist) {
       this.p = p;
-      for (String fldname : fieldlist)
+      for (String fldname : fieldlist) {
+         if (fldname.equals("*")) {
+            schema.addAll(p.schema());
+            break;
+         }
          schema.add(fldname, p.schema());
+      }
    }
 
    /**

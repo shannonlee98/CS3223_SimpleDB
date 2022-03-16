@@ -16,21 +16,27 @@ public class Tester {
 		 Planner planner = db.planner();
 
          // analogous to the statement
-//         String qry = "select count(sname), sname from student";
-//         String qry = "select * from student";
-         String qry = "select count(*) from student";
-//
+//         String qry = "select majorid, count(majorid) from student group by majorid"; // completed
+//         String qry = "select * from student"; //completed
+//         String qry = "select *, count(sname), count(*) from student group by gradyear"; // completed
+//         String qry = "select count(*) from student group by majorid"; // completed
+//         String qry = "select count(distinct gradyear), majorid from student group by majorid";
+         String qry = "select sname from where majorid = 20";
+
          Plan p = planner.createQueryPlan(qry, tx);
 
          // analogous to the result set
          Scan s = p.open();
 
-//         System.out.println("success");
-         System.out.println("Count of *");
-         while (s.next()) {
-             int count = s.getInt("countof*"); //in lower case
-             System.out.println(count);
-         }
+         System.out.println("success");
+//         System.out.println("Count of majorid\tmajorid\"");
+//         while (s.next()) {
+//            String count = s.getString("countofmajorid"); //in lower case
+//            int count = s.getInt(("countofmajorid"));
+//            int major = s.getInt(("majorid"));
+//            System.out.println(count);
+//            System.out.println(count + "\t" + major);
+//         }
 		 
 //		 String qry = "create index majoridx "
 //				 	+ "on STUDENT(MajorID) using hash";

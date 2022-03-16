@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="Implement select *">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoOldDB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/AvgFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/AvgFn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/CountFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/CountFn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/GroupByScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/GroupByScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MaxFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MaxFn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MinFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/MinFn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SumFn.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SumFn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProjectScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/ProjectScan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,10 +53,11 @@
       <recent name="C:\Users\ZhengWen\Documents\Nus mods\Y4S2\CS3223\CS3223_SimpleDB\SimpleDBEngine\src\simpledb\materialize" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="test" />
       <recent name="simpledb.materialize" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Tester">
+  <component name="RunManager" selected="Application.SimpleIJ">
     <configuration name="CreateDemoDB" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.CreateDemoDB" />
       <module name="SimpleDBEngine" />
@@ -136,8 +126,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.SimpleIJ" />
-        <item itemvalue="Application.Tester" />
         <item itemvalue="Application.CreateDemoDB" />
+        <item itemvalue="Application.Tester" />
         <item itemvalue="Application.IndexJoinTest" />
         <item itemvalue="Application.CreateStudentDB" />
       </list>
@@ -154,6 +144,7 @@
       <workItem from="1645088272932" duration="1447000" />
       <workItem from="1647394027880" duration="1223000" />
       <workItem from="1647413573633" duration="5145000" />
+      <workItem from="1647454798514" duration="7374000" />
     </task>
     <servers />
   </component>

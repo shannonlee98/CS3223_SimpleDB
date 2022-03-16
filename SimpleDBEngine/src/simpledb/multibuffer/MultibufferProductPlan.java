@@ -122,7 +122,12 @@ public class MultibufferProductPlan implements Plan {
       return t;
    }
 
-   public ExecutionChain GetEC() {
-      return new Join(this, lhs.GetEC(), rhs.GetEC());
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Join(this, lhs.getChain(), rhs.getChain());
    }
 }

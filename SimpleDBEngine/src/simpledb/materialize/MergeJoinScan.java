@@ -21,29 +21,15 @@ public class MergeJoinScan implements Scan {
      * @param s1       the LHS sorted scan
      * @param s2       the RHS sorted scan
      * @param fldname1 the LHS join field
+     * @param condOp   the conditional operator of the fields
      * @param fldname2 the RHS join field
      */
     public MergeJoinScan(Scan s1, SortScan s2, String fldname1, CondOp condOp, String fldname2) {
         this.s1 = s1;
         this.s2 = s2;
-
-        //print s1 n s2 check if sorted according to fields
-
-//       System.out.println(fldname1 + ": ");
-//       while (s1.next())
-//           System.out.println(s1.getInt(fldname1));
-//       s1.close();
-//
-//       System.out.println("\n" + fldname2 + ": ");
-//       while (s2.next())
-//           System.out.println(s2.getInt(fldname2));
-//       s2.close();
-
-        //________________________________________________
-
         this.fldname1 = fldname1;
         this.fldname2 = fldname2;
-        this.condOp = condOp;
+        this.condOp = condOp; //condOp is passed in for future development of non-equi mergejoin
         beforeFirst();
     }
 
@@ -111,7 +97,7 @@ public class MergeJoinScan implements Scan {
 
             if (v1.compareTo(v2) <= 0)
                 hasmore1 = s1.next();
-            else// if (v1.compareTo(v2) > 0)
+            else // if (v1.compareTo(v2) > 0)
                 hasmore2 = s2.next();
         }
         return false;

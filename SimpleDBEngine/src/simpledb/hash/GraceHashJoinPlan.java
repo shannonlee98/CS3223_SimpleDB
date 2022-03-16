@@ -15,10 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Plan class corresponding to the <i>hashjoin</i>
- * relational algebra operator.
- *
- * @author Edward Sciore
+ * The Plan class corresponding to the hash join operation
  */
 public class GraceHashJoinPlan implements Plan {
     private Plan smaller, larger;
@@ -63,7 +60,7 @@ public class GraceHashJoinPlan implements Plan {
     }
 
     /**
-     * Opens an indexjoin scan for this query
+     * Opens a grace hash join scan for this query
      *
      * @see Plan#open()
      */
@@ -115,8 +112,8 @@ public class GraceHashJoinPlan implements Plan {
     /**
      * Estimates the number of block accesses to compute the join.
      * The formula is:
-     * <pre> B(indexjoin(p1,p2,idx)) = B(p1) + R(p1)*B(idx)
-     *       + R(indexjoin(p1,p2,idx) </pre>
+     * <pre> B(hashjoin(p1,p2,idx)) = B(p1) + B(p2) +
+     * (B(p1) + B(p2)) * number of partition splitting </pre>
      *
      * @see Plan#blocksAccessed()
      */
@@ -133,14 +130,15 @@ public class GraceHashJoinPlan implements Plan {
     }
 
     /**
-     * Estimates the number of output records in the join.
-     * The formula is:
-     * <pre> R(indexjoin(p1,p2,idx)) = R(p1)*R(idx) </pre>
-     *
-     * @see Plan#recordsOutput()
+     * Return the number of records in the join.
+     * Assuming uniform distribution, the formula is:
+     * <pre> R(join(p1,p2)) = R(p1)*R(p2)/max{V(p1,F1),V(p2,F2)}</pre>
+     * @see simpledb.plan.Plan#recordsOutput()
      */
     public int recordsOutput() {
-        return smaller.recordsOutput() * larger.recordsOutput();
+        int maxvals = Math.max(smaller.distinctValues(joinfieldSmaller),
+                larger.distinctValues(joinfieldLarger));
+        return (smaller.recordsOutput() * larger.recordsOutput()) / maxvals;
     }
 
     /**
@@ -157,7 +155,7 @@ public class GraceHashJoinPlan implements Plan {
     }
 
     /**
-     * Returns the schema of the index join.
+     * Returns the schema of the hash join.
      *
      * @see Plan#schema()
      */
@@ -165,6 +163,13 @@ public class GraceHashJoinPlan implements Plan {
         return sch;
     }
 
+    /**
+     * Split the given scan into partitions in the form of temp tables.
+     * @param src the scan to be split
+     * @param sch the schema of the scan
+     * @param hashonfield the field for the hashcode
+     * @return a list of partitions in the form of temp tables.
+     */
     private List<TempTable> getPartitions(Scan src, Schema sch, String hashonfield) {
 
         //open all partitions, write, then close all partitions.
@@ -194,8 +199,13 @@ public class GraceHashJoinPlan implements Plan {
         return ttList;
     }
 
-    public ExecutionChain GetEC() {
-        return new Join(this, smaller.GetEC(), larger.GetEC(), joinfieldSmaller,
-                new CondOp(CondOp.types.equals).toString() ,joinfieldLarger);
+    /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+        return new Join(this, smaller.getChain(), larger.getChain(), joinfieldSmaller,
+                new CondOp(CondOp.types.equals).toString(), joinfieldLarger);
     }
 }

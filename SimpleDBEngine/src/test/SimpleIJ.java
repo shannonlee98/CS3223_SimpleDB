@@ -1,7 +1,6 @@
 package test;
 
 import simpledb.controller.Setting;
-import simpledb.display.ExecutionPath;
 import simpledb.tx.Transaction;
 import simpledb.plan.Plan;
 import simpledb.plan.Planner;

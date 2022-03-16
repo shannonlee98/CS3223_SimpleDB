@@ -116,9 +116,8 @@ public class Term {
 
     /**
      * Determine if this term is of the form "F1XF2"
-     * where F1 is the specified field and F2 is another field.
-     * If so, the method returns the name of that field.
-     * If not, the method returns null.
+     * where F1 is the specified field, F2 is another field
+     * and X is a conditional operator.
      *
      * @param f1 the name of the first field
      * @param f2 the name of the second field

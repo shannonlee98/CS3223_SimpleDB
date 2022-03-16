@@ -1,7 +1,6 @@
 package simpledb.plan;
 
 import simpledb.display.ExecutionChain;
-import simpledb.display.Join;
 import simpledb.display.Select;
 import simpledb.query.Predicate;
 import simpledb.query.Scan;
@@ -87,7 +86,12 @@ public class SelectPlan implements Plan {
       return p.schema();
    }
 
-   public ExecutionChain GetEC() {
-      return new Select(this, p.GetEC(), pred.toString());
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Select(this, p.getChain(), pred.toString());
    }
 }

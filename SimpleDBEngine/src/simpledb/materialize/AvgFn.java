@@ -24,7 +24,7 @@ public class AvgFn implements AggregationFn {
       this.fldname = fldname;
       this.isDistinct = isDistinct;
    }
-   
+
    /**
     * Start a new count.
     * Since SimpleDB does not support null values,
@@ -39,7 +39,7 @@ public class AvgFn implements AggregationFn {
       count = 1;
       values.add(sum);
    }
-   
+
    /**
     * Since SimpleDB does not support null values,
     * add the next int value to the sum

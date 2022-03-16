@@ -1,14 +1,19 @@
 package simpledb.controller;
 
-import simpledb.display.ExecutionPath;
-import simpledb.query.CondOp;
+import simpledb.display.Display;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.Instant;
 
+/**
+ * The Setting class that controls several global events in the program
+ * such as printing of results, printing of query plan and selecting
+ * which join to use.
+ */
 public class Setting {
+    //the singleton instance object of the setting class.
     private static Setting setting;
+
     public enum JoinMode {
         cost,
         block,
@@ -18,11 +23,6 @@ public class Setting {
         index
     }
 
-    public enum TimeMode {
-        timeon,
-        timeoff,
-    }
-
     public enum PrintMode {
         printall,
         printnone,
@@ -30,65 +30,77 @@ public class Setting {
     }
 
     private JoinMode joinMode;
-    private TimeMode timeMode;
     private Instant timeStart;
     private Instant timeEnd;
-    private CondOp.types val = null;
     private PrintMode printMode;
     private boolean printResults;
 
-    public static synchronized Setting getInstance(){
-        if(setting == null)
+    /**
+     * Retrieve the singleton of the setting class.
+     * Initialise it if it has not been initialised.
+     *
+     * @return the initialised singleton instance of the setting class
+     */
+    public static synchronized Setting getInstance() {
+        if (setting == null)
             setting = new Setting();
         return setting;
     }
 
+    /**
+     * Implements the setting class.
+     * Sets the default settings.
+     */
     public Setting() {
         joinMode = JoinMode.cost;
-        timeMode = TimeMode.timeoff;
         printResults = true;
     }
 
     public JoinMode getJoinMode() {
         return joinMode;
     }
-    public boolean isTimerOn() {
-        return timeMode == TimeMode.timeon;
-    }
 
     private void setJoinMode(String joinModeName) {
         joinMode = JoinMode.valueOf(joinModeName);
     }
-    private void setTimeMode(String timeModeName) {
-        timeMode = TimeMode.valueOf(timeModeName);
-    }
+
     private void setPrintModeMode(String printModeName) {
         printMode = PrintMode.valueOf(printModeName);
     }
 
+    /**
+     * Updates the variables in the setting accordingly to the settingName.
+     *
+     * @param settingName the setting to be set
+     */
     public void set(String settingName) {
-        if (settingName.contains("time")) {
-            setTimeMode(settingName);
-            return;
-        }
         if (settingName.contains("print")) {
             setPrintModeMode(settingName);
             boolean executionPathEnabled = printMode == PrintMode.printall;
             printResults = printMode != PrintMode.printnone;
-            ExecutionPath.getInstance().set(executionPathEnabled, executionPathEnabled);
+            Display.getInstance().set(executionPathEnabled, executionPathEnabled);
             return;
         }
         setJoinMode(settingName);
     }
 
+    /**
+     * Set the start of the stopwatch
+     */
     public void setTimeStart() {
         timeStart = Instant.now();
     }
 
+    /**
+     * Set the end of the stopwatch
+     */
     public void setTimeStop() {
         timeEnd = Instant.now();
     }
 
+    /**
+     * Print the time elapsed recorded by the stopwatch
+     */
     public void printTimeElapsed() {
         if (timeStart == null || timeEnd == null) {
             System.out.println("timer has not started or ended");
@@ -96,7 +108,6 @@ public class Setting {
         }
 
         Duration timeElapsed = Duration.between(timeStart, timeEnd);
-
         System.out.println(timeElapsed.getSeconds() + "." + timeElapsed.getNano() + "s");
     }
 

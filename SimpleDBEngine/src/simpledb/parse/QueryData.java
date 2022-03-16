@@ -49,21 +49,13 @@ public class QueryData {
 
    /**
     * Returns the aggregates mentioned in the select clause.
-    * @return a list of pairs containing aggregate and field names
+    * @return a list of aggregates
     */
    public List<AggregationFn> aggregates() { return aggregates; }
 
    /**
-    * Add fields to select fields
-    * @param fields list of fields to add
-    */
-   public void addFields(List<String> fields) {
-      this.fields = fields;
-   }
-
-   /**
-    * Returns the aggregates mentioned in the select clause.
-    * @return a list of pairs containing aggregate and field names
+    * Returns the fields that are aggregated on
+    * @return a list of fields that are agrregated on
     */
    public List<String> aggregatesFields() {
       List<String> aggregateFields = new ArrayList<>();

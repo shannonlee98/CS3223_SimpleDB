@@ -2,10 +2,8 @@ package simpledb.plan;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import simpledb.display.ExecutionChain;
-import simpledb.display.Join;
 import simpledb.display.Project;
 import simpledb.record.Schema;
 import simpledb.query.*;
@@ -81,7 +79,12 @@ public class ProjectPlan implements Plan {
       return schema;
    }
 
-   public ExecutionChain GetEC() {
-      return new Project(this, p.GetEC(), schema.fields());
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Project(this, p.getChain(), schema.fields());
    }
 }

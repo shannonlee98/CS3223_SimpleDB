@@ -4,7 +4,6 @@ import java.util.*;
 
 import simpledb.display.ExecutionChain;
 import simpledb.display.Group;
-import simpledb.display.Join;
 import simpledb.tx.Transaction;
 import simpledb.record.Schema;
 import simpledb.plan.Plan;
@@ -44,6 +43,8 @@ public class GroupByPlan implements Plan {
         for (String fldname : groupfields)
             sch.add(fldname, p.schema());
 
+        // add the aggregate fields based on their innate
+        // types and type of the field they are aggregating
         for (AggregationFn fn : aggfns) {
             if (fn.isAlwaysInteger()) {
                 sch.addIntField(fn.fieldName());
@@ -120,7 +121,12 @@ public class GroupByPlan implements Plan {
         return sch;
     }
 
-    public ExecutionChain GetEC() {
-        return new Group(this, p.GetEC(), groupfields, aggfns);
+    /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+        return new Group(this, p.getChain(), groupfields, aggfns);
     }
 }

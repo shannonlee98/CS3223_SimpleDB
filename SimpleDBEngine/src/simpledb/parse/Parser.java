@@ -19,7 +19,7 @@ public class Parser {
         lex = new Lexer(s);
     }
 
-// Methods for parsing predicates, terms, expressions, constants, and fields
+    // Methods for parsing predicates, terms, expressions, constants, and fields
 
     public String field() {
         return lex.eatId();
@@ -70,8 +70,14 @@ public class Parser {
         Setting.getInstance().set(lex.eatStringConstant());
     }
 
-// Methods for parsing queries
+    // Methods for parsing queries
 
+    /**
+     * Parses the query string by extracting the select fields,
+     * aggregate functions, tables, predicates, order by and
+     * group by fields
+     * @return QueryData containing the query
+     */
     public QueryData query() {
         lex.eatKeyword("select");
         boolean isDistinct = distinct();
@@ -118,6 +124,10 @@ public class Parser {
         return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
     }
 
+
+    /**
+     * @return true if the token is "distinct"
+     */
     private boolean distinct() {
         if (lex.matchKeyword("distinct")) {
             lex.eatKeyword("distinct");
@@ -126,6 +136,9 @@ public class Parser {
         return false;
     }
 
+    /**
+     * @return list of fields that were comma separated
+     */
     private List<String> selectList() {
         List<String> list = new ArrayList<>();
         if (lex.matchDelim('*')) {
@@ -142,6 +155,10 @@ public class Parser {
     }
 
 
+    /**
+     * Parses an aggregation function
+     * @return Aggregation function
+     */
     private AggregationFn getAggregateFn() {
         String aggregate = aggregate();
         boolean isDistinct = false;
@@ -182,6 +199,9 @@ public class Parser {
         }
     }
 
+    /**
+     * @return List of order by fields
+     */
     private LinkedHashMap<String, Boolean> orderByList() {
         LinkedHashMap<String, Boolean> orderByFields = new LinkedHashMap<>();
         try {
@@ -206,6 +226,9 @@ public class Parser {
         return orderByFields;
     }
 
+    /**
+     * @return list of group by fields
+     */
     private List<String> groupByList() {
         List<String> groupByFields = new ArrayList<>();
         try {
@@ -222,6 +245,9 @@ public class Parser {
         return groupByFields;
     }
 
+    /**
+     * @return list of tables
+     */
     private Collection<String> tableList() {
         Collection<String> L = new ArrayList<>();
         if (lex.matchId())

@@ -1,13 +1,10 @@
 package simpledb.opt;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import simpledb.controller.Setting;
-import simpledb.display.ExecutionPath;
-import simpledb.display.Join;
+import simpledb.display.Display;
 import simpledb.hash.GraceHashJoinPlan;
 import simpledb.multibuffer.BlockJoinPlan;
 import simpledb.tx.Transaction;
@@ -67,10 +64,9 @@ class TablePlanner {
 
     /**
      * Constructs a join plan of the specified plan
-     * and the table.  The plan will use an indexjoin, if possible.
-     * (Which means that if an indexselect is also possible,
-     * the indexjoin operator takes precedence.)
-     * The method returns null if no join is possible.
+     * and the table.  The plan will calculate the estimated cost of
+     * each join plan and use the cheapest join if unspecified which
+     * join to use
      *
      * @param current the specified plan
      * @return a join plan of the plan and this table
@@ -86,6 +82,9 @@ class TablePlanner {
         String lhsfield = joinTerm.getLhs().asFieldName();
         String rhsfield = joinTerm.getRhs().asFieldName();
         CondOp condOp = joinTerm.getCondOp();
+
+        //we want to set myplan as the rhs plan. so we flip the term if
+        //it is on the lhs.
         if (myschema.hasField(lhsfield)) {
             //need to flip terms
             String temp = lhsfield;
@@ -106,7 +105,11 @@ class TablePlanner {
 
         //decide which join to use
         Plan p = null;
+
+        //check if another join is set to be used
         Setting.JoinMode joinMode = Setting.getInstance().getJoinMode();
+
+        //otherwise, decide on the joins by cost
         if (joinMode.toString().equals("cost")) {
             int cost = Integer.MAX_VALUE;
             for (Plan jp : JoinPlans.values()) {
@@ -116,14 +119,15 @@ class TablePlanner {
                     cost = jp.blocksAccessed();
                 }
                 if (jp != null) {
-                    ExecutionPath.getInstance().printScoring(jp.GetEC());
+                    Display.getInstance().printScoring(jp.getChain());
                 }
             }
-            ExecutionPath.getInstance().printScoreSeparator();
+            Display.getInstance().printScoreSeparator();
         } else {
             p = JoinPlans.get(joinMode);
         }
 
+        // if the joins do not work return a product join with the selection of the join predicates
         return p != null ? addJoinPred(addSelectPred(p), currsch) : makeProductJoin(current, currsch);
     }
 
@@ -144,7 +148,6 @@ class TablePlanner {
             Constant val = mypred.equatesWithConstant(fldname);
             if (val != null) {
                 IndexInfo ii = indexes.get(fldname);
-//                System.out.println("index on " + fldname + " used");
                 return new IndexSelectPlan(myplan, ii, val);
             }
         }
@@ -178,7 +181,6 @@ class TablePlanner {
 
     private Plan addJoinPred(Plan p, Schema currsch) {//}, String joinfield1, String joinfield2) {
         Predicate joinpred = mypred.joinSubPred(currsch, myschema);
-//      joinpred.differenceWith(mypred.relationBetweenField(joinfield1, joinfield2));
         if (joinpred != null && p != null)
             return new SelectPlan(p, joinpred);
         else

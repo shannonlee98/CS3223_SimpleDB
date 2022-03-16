@@ -97,8 +97,13 @@ public class SimpleJoinPlan implements Plan {
       return sch;
    }
 
-   public ExecutionChain GetEC() {
-      return new Join(this, p1.GetEC(), p2.GetEC(), joinfield1,
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Join(this, p1.getChain(), p2.getChain(), joinfield1,
               new CondOp(CondOp.types.equals).toString(), joinfield2);
    }
 }

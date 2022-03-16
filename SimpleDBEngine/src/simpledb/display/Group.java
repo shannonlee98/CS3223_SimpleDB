@@ -5,13 +5,24 @@ import simpledb.plan.Plan;
 
 import java.util.List;
 
-//Table.Group(sname, sid).Select(aggrFields) **
+/**
+ * The ExecutionChain class for group plans
+ * format: childExecutionChain.GROUP([groupbyfields..]).AGGR([aggregates...])
+ */
 public class Group implements ExecutionChain {
     ExecutionChain child;
     List<String> groupfields;
     List<AggregationFn> aggrfields;
     Plan main;
 
+    /**
+     * Creates a group execution chain
+     *
+     * @param p           the group plan
+     * @param child       the child execution plan
+     * @param groupfields the group by fields
+     * @param aggrfields  the aggregate fields
+     */
     public Group(Plan p, ExecutionChain child, List<String> groupfields,
                  List<AggregationFn> aggrfields) {
         this.child = child;
@@ -20,13 +31,21 @@ public class Group implements ExecutionChain {
         this.main = p;
     }
 
-    @Override
+    /**
+     * Return the formatted name of the group plan in main.
+     *
+     * @see ExecutionChain#getName()
+     */
     public String getName() {
         return "GROUP";
     }
 
-    @Override
-    public String display() {
+    /**
+     * Return the formatted string of the execution chain.
+     *
+     * @see ExecutionChain#toString()
+     */
+    public String toString() {
         String aggr = "";
         for (AggregationFn fn : aggrfields) {
             aggr += (fn.fieldName()) + (", ");
@@ -34,14 +53,18 @@ public class Group implements ExecutionChain {
         if (!aggr.equals("")) {
             aggr = aggr.substring(0, aggr.length() - 2);
         }
-        String display = child.display() + "." + getName() + "(" +
+        String display = child.toString() + "." + getName() + "(" +
                 groupfields.toString().replace("[", "").
                         replace("]", "") + ")";
         display += ".AGGR(" + aggr + ")";
         return display;
     }
 
-    @Override
+    /**
+     * Return the total cost up till the group execution chain.
+     *
+     * @see ExecutionChain#cost()
+     */
     public int cost() {
         return main.blocksAccessed();
     }

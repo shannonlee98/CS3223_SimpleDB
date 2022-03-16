@@ -39,6 +39,7 @@ public class RecordComparator implements Comparator<Scan> {
          int result = val1.compareTo(val2);
          Boolean isAsc = entry.getValue();
          if (result != 0)
+            //we included the asc/dsc logic here for smoother integration
             return isAsc ? result : -1 * result;
       }
       return 0;

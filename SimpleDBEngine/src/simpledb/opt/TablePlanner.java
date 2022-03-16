@@ -1,13 +1,10 @@
 package simpledb.opt;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import simpledb.controller.Setting;
-import simpledb.display.ExecutionPath;
-import simpledb.display.Join;
+import simpledb.display.Display;
 import simpledb.hash.GraceHashJoinPlan;
 import simpledb.multibuffer.BlockJoinPlan;
 import simpledb.tx.Transaction;
@@ -116,10 +113,10 @@ class TablePlanner {
                     cost = jp.blocksAccessed();
                 }
                 if (jp != null) {
-                    ExecutionPath.getInstance().printScoring(jp.GetEC());
+                    Display.getInstance().printScoring(jp.GetEC());
                 }
             }
-            ExecutionPath.getInstance().printScoreSeparator();
+            Display.getInstance().printScoreSeparator();
         } else {
             p = JoinPlans.get(joinMode);
         }

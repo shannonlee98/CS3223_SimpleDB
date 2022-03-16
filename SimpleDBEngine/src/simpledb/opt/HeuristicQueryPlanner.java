@@ -2,7 +2,7 @@ package simpledb.opt;
 
 import java.util.*;
 
-import simpledb.display.ExecutionPath;
+import simpledb.display.Display;
 import simpledb.materialize.DistinctPlan;
 import simpledb.materialize.GroupByPlan;
 import simpledb.materialize.SortPlan;
@@ -71,7 +71,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
       }
 
-      ExecutionPath.getInstance().print(currentplan.GetEC());
+      Display.getInstance().print(currentplan.GetEC());
       return currentplan;
    }
    

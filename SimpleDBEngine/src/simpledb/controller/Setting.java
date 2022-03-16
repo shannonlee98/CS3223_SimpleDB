@@ -1,9 +1,7 @@
 package simpledb.controller;
 
-import simpledb.display.ExecutionPath;
-import simpledb.query.CondOp;
+import simpledb.display.Display;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -40,10 +38,11 @@ public class Setting {
     /**
      * Retrieve the singleton of the setting class.
      * Initialise it if it has not been initialised.
+     *
      * @return the initialised singleton instance of the setting class
      */
-    public static synchronized Setting getInstance(){
-        if(setting == null)
+    public static synchronized Setting getInstance() {
+        if (setting == null)
             setting = new Setting();
         return setting;
     }
@@ -71,6 +70,7 @@ public class Setting {
 
     /**
      * Updates the variables in the setting accordingly to the settingName.
+     *
      * @param settingName the setting to be set
      */
     public void set(String settingName) {
@@ -78,7 +78,7 @@ public class Setting {
             setPrintModeMode(settingName);
             boolean executionPathEnabled = printMode == PrintMode.printall;
             printResults = printMode != PrintMode.printnone;
-            ExecutionPath.getInstance().set(executionPathEnabled, executionPathEnabled);
+            Display.getInstance().set(executionPathEnabled, executionPathEnabled);
             return;
         }
         setJoinMode(settingName);

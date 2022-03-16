@@ -67,7 +67,7 @@ public class Parser {
     //set some stuff in simple ij
     public void setting() {
         lex.eatKeyword("setting");
-        Setting.getInstance().setJoinMode(lex.eatStringConstant());
+        Setting.getInstance().set(lex.eatStringConstant());
     }
 
 // Methods for parsing queries

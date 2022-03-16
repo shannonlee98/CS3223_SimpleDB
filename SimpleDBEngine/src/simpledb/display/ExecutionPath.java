@@ -18,6 +18,11 @@ public class ExecutionPath {
         scoring = true;
     }
 
+    public void set(boolean enabled, boolean scoring) {
+        this.enabled = enabled;
+        this.scoring = scoring;
+    }
+
     public void print(ExecutionChain ec) {
         if (enabled) {
             String output = "\tDisplayQueryPlan>> " + ec.display();

@@ -52,7 +52,7 @@ public class GraceHashJoinPlan implements Plan {
         //we assume that the hash function splits the records evenly when computing the cost function.
         int hashTableBlockSize = (int) Math.ceil(Math.min(p1.blocksAccessed(),
                 p2.blocksAccessed()) * 1.0 / partitions);
-        while (hashTableBlockSize > tx.availableBuffs() - 2) { // Divide M by (B-1) until 'M/(B-1) <= B-2'
+        while (hashTableBlockSize > Math.max(tx.availableBuffs() - 2, 1)) { // Divide M by (B-1) until 'M/(B-1) <= B-2'
             estimatedPartitionMultiplier++;
             hashTableBlockSize = (int) Math.ceil(hashTableBlockSize * 1.0 / partitions);
         }
@@ -77,7 +77,7 @@ public class GraceHashJoinPlan implements Plan {
             toSplit = new ArrayList<>();
             for (int i = 0; i < smallerPartitions.size(); i++) {
                 int partitionsize = tx.size(smallerPartitions.get(i).tableName() + ".tbl");
-                if (partitionsize > tx.availableBuffs() - 2) {
+                if (partitionsize > Math.max(tx.availableBuffs() - 2, 1)) {
                     toSplit.add(i);
                 }
             }

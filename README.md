@@ -34,3 +34,11 @@ and courseid = cid`
 4. `setting 'merge'`
 5. `setting 'hash'`
 6. `setting 'product'` 
+
+### Example settings for print:
+1. Print results and display query plan  
+   `setting 'printall'`
+2. Print result but do not display query plan  
+   `setting 'printresult'` 
+3. Print neither results nor display query plan  
+   `setting 'printnone'`

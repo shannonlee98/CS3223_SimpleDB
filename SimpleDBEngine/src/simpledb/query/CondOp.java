@@ -3,9 +3,7 @@ package simpledb.query;
 import simpledb.parse.BadSyntaxException;
 
 /**
- * The interface corresponding to SQL conditional operators.
- *
- * @author ZhengWen
+ * The class corresponding to SQL conditional operators.
  */
 public class CondOp {
     public enum types {
@@ -19,13 +17,32 @@ public class CondOp {
 
     private types val = null;
 
+    /**
+     * Initialise the conditional operator from a string
+     *
+     * @param s the string
+     */
     public CondOp(String s) {
         this.val = fromStr(s);
     }
+
+    /**
+     * Initialise the conditional operator from a type
+     *
+     * @param type the type
+     */
     public CondOp(types type) {
         this.val = type;
     }
 
+    /**
+     * Flip the conditional operator
+     * used when we want to find the same term with the
+     * lhs and rhs fields swapped.
+     * i.e. lhsfield > rhsfield == rhsfield < lhsfield
+     *
+     * @return the flipped conditional operator
+     */
     public CondOp flip() {
         switch (val) {
             case lessThan:
@@ -75,6 +92,13 @@ public class CondOp {
         }
     }
 
+    /**
+     * Evaluate two constants with the conditional operator
+     *
+     * @param c1 first constant
+     * @param c2 second constant
+     * @return if the relationship between the two constants is true
+     */
     public boolean evaluate(Constant c1, Constant c2) {
         switch (val) {
             case lessThan:

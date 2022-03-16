@@ -54,6 +54,10 @@ public class DistinctPlan implements Plan {
         return new DistinctScan(srcPlus);
     }
 
+    /**
+     * @param src scan to split
+     * @return list of sorted runs
+     */
     public List<TempTable> splitIntoRuns(Scan src) {
         List<TempTable> temps = new ArrayList<>();
         src.beforeFirst();
@@ -75,6 +79,10 @@ public class DistinctPlan implements Plan {
     }
 
 
+    /**
+     * @param runs list of sorted runs
+     * @return merged runs
+     */
     private List<TempTable> doDistinctMergeIteration(List<TempTable> runs) {
         List<TempTable> result = new ArrayList<>();
         while (runs.size() > 1) {
@@ -87,6 +95,11 @@ public class DistinctPlan implements Plan {
         return result;
     }
 
+    /**
+     * @param p1 first run
+     * @param p2 second run
+     * @return merged run
+     */
     private TempTable mergeTwoDistinctRuns(TempTable p1, TempTable p2) {
         Scan src1 = p1.open();
         Scan src2 = p2.open();
@@ -186,6 +199,12 @@ public class DistinctPlan implements Plan {
         return new Distinct(this, p.getChain(), comp.fields);
     }
 
+    /**
+     * Copy source scan to destination scan
+     * @param src scan to copy
+     * @param dest scan to paste
+     * @return true if src has next
+     */
     private boolean copy(Scan src, UpdateScan dest) {
         dest.insert();
         for (String fldname : sch.fields()) {
@@ -194,6 +213,11 @@ public class DistinctPlan implements Plan {
         return src.next();
     }
 
+    /**
+     * @param src1 first scan
+     * @param src2 second scan
+     * @return True if scans are different
+     */
     private boolean isDifferent(Scan src1, Scan src2) {
         if (src1 == null || src2 == null)
             return false;

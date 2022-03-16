@@ -110,11 +110,10 @@ public class Planner {
    }
 
    /**
-    * Checks if each field is in the schema or in the aggregation
-    * functions. Throws error if the field is one that is already
-    * used in the aggregation function. Throws error if the field
+    * Checks if each field is valid. Throws error if the field
     * is not in the schema and also not the column name of any
-    * aggregation function
+    * aggregation function. Throws error if there are aggregation
+    * functions along with fields that are not in the group by clause
     * @param data data of the query
     * @param schema Schema of the all fields from selected tables
     */
@@ -135,21 +134,6 @@ public class Planner {
    private boolean hasGroupField(QueryData data, String fldname) {
       for (String group : data.groupByFields())
          if (group.equals(fldname))
-            return true;
-      return false;
-   }
-
-   /**
-    * Checks if the field name is already used in any
-    * aggregation function
-    * @param aggregates List of aggregate functions
-    * @param fldname Field name to be verified
-    * @return True if the field is found in the aggregation
-    * function list, false otherwise
-    */
-   private boolean isAggregationField(List<AggregationFn> aggregates, String fldname) {
-      for (AggregationFn aggrFn : aggregates)
-         if (fldname.equals(aggrFn.field()))
             return true;
       return false;
    }

@@ -86,7 +86,12 @@ public class MaterializePlan implements Plan {
       return srcplan.schema();
    }
 
-   public ExecutionChain GetEC() {
-      return srcplan.GetEC();
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return srcplan.getChain();
    }
 }

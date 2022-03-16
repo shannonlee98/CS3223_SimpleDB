@@ -74,7 +74,12 @@ public class TablePlan implements Plan {
       return layout.schema();
    }
 
-   public ExecutionChain GetEC() {
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
       return new Table(this, tblname);
    }
 }

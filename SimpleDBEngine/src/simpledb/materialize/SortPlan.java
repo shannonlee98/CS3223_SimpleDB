@@ -99,8 +99,13 @@ public class SortPlan implements Plan {
       return sch;
    }
 
-   public ExecutionChain GetEC() {
-      return new Sort(this, p.GetEC(), comp.fields);
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Sort(this, p.getChain(), comp.fields);
    }
 
    private List<TempTable> splitIntoRuns(Scan src) {

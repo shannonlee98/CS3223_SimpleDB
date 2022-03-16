@@ -120,8 +120,13 @@ public class MergeJoinPlan implements Plan {
    }
 
 
-   public ExecutionChain GetEC() {
-      return new Join(this, p1.GetEC(), p2.GetEC(), fldname1,
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Join(this, p1.getChain(), p2.getChain(), fldname1,
               condOp.toString(), fldname2);
    }
 }

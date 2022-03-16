@@ -71,7 +71,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
       }
 
-      Display.getInstance().print(currentplan.GetEC());
+      Display.getInstance().print(currentplan.getChain());
       return currentplan;
    }
    

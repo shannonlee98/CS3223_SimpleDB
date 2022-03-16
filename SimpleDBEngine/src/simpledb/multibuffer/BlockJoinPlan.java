@@ -144,8 +144,13 @@ public class BlockJoinPlan implements Plan {
       return t;
    }
 
-   public ExecutionChain GetEC() {
-      return new Join(this, outer.GetEC(), inner.GetEC(), joinfieldOuter,
+       /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+      return new Join(this, outer.getChain(), inner.getChain(), joinfieldOuter,
               condOp.toString(), joinfieldInner);
    }
 }

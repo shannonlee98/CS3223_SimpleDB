@@ -177,8 +177,13 @@ public class DistinctPlan implements Plan {
         return sch;
     }
 
-    public ExecutionChain GetEC() {
-        return new Distinct(this, p.GetEC(), comp.fields);
+        /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+        return new Distinct(this, p.getChain(), comp.fields);
     }
 
     private boolean copy(Scan src, UpdateScan dest) {

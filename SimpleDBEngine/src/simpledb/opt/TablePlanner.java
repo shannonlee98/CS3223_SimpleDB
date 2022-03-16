@@ -113,7 +113,7 @@ class TablePlanner {
                     cost = jp.blocksAccessed();
                 }
                 if (jp != null) {
-                    Display.getInstance().printScoring(jp.GetEC());
+                    Display.getInstance().printScoring(jp.getChain());
                 }
             }
             Display.getInstance().printScoreSeparator();

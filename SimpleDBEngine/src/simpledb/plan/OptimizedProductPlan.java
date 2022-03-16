@@ -1,7 +1,6 @@
 package simpledb.plan;
 
 import simpledb.display.ExecutionChain;
-import simpledb.display.Join;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
 
@@ -41,7 +40,12 @@ public class OptimizedProductPlan implements Plan {
       return bestplan.schema();
    }
 
-    public ExecutionChain GetEC() {
-        return bestplan.GetEC();
+        /**
+     * Returns the schema of the index join.
+     *
+     * @see Plan#getChain()
+     */
+    public ExecutionChain getChain() {
+        return bestplan.getChain();
     }
 }

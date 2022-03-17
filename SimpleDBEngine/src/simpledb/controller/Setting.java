@@ -64,7 +64,7 @@ public class Setting {
         joinMode = JoinMode.valueOf(joinModeName);
     }
 
-    private void setPrintModeMode(String printModeName) {
+    private void setPrintMode(String printModeName) {
         printMode = PrintMode.valueOf(printModeName);
     }
 
@@ -75,7 +75,7 @@ public class Setting {
      */
     public void set(String settingName) {
         if (settingName.contains("print")) {
-            setPrintModeMode(settingName);
+            setPrintMode(settingName);
             boolean executionPathEnabled = printMode == PrintMode.printall;
             printResults = printMode != PrintMode.printnone;
             Display.getInstance().set(executionPathEnabled, executionPathEnabled);

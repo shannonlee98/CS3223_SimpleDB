@@ -34,20 +34,6 @@ public class GraceHashJoinScan implements Scan {
 
     private Map<Constant, ArrayList<Map<String, Constant>>> hashTable;
     private boolean isEmpty;
-    //there is a successful match but how can we find the
-    //scan in s1.
-
-    /**
-     * Need to somehow get the hash function for partitioning the given field.
-     * To replicate copies use UpdateScan n maybe Materialize plan to get and create
-     * the B - 1 partitions.
-     *
-     * Can use these two methods for the joining part as well.
-     * For the joining part, iterate an entire scan of one side into a hashmap.
-     * then, iterate the other scan and return true if u found a match.
-     * If the current scan returned false, bring in the next scan.
-     */
-
 
     /**
      * Creates a block join scan for the specified LHS scan and
@@ -71,20 +57,19 @@ public class GraceHashJoinScan implements Scan {
     }
 
     public boolean nextPartition() {
+        //close the previous partition scan for s2 if it is open
         if (currentParition >= 0) {
             s2.close();
         }
 
         currentParition++;
 
+        //if we finished joining all partitions, we are done.
         if (currentParition == partitions) {
             allPartitionsClosed = true;
             return false;
         }
         allPartitionsClosed = false;
-
-        Scan s1 = partitions1.get(currentParition).open();
-        s1.beforeFirst();
         s2 = partitions2.get(currentParition).open();
         s2.beforeFirst();
         if (!s2.next()) {
@@ -93,6 +78,9 @@ public class GraceHashJoinScan implements Scan {
         }
 
         keyIterator = 0;
+
+        Scan s1 = partitions1.get(currentParition).open();
+        s1.beforeFirst();
 
         //initialise hashtable
         hashTable = new HashMap<>();
@@ -145,6 +133,8 @@ public class GraceHashJoinScan implements Scan {
             return false;
         }
         while (true) {
+//            System.out.println("next...");
+
             //first check if there are duplicate key values in our hashtable
             if (hashTable.keySet().contains(s2.getVal(joinfield2)) &&
                     keyIterator < hashTable.get(s2.getVal(joinfield2)).size()) {
@@ -152,6 +142,7 @@ public class GraceHashJoinScan implements Scan {
                 return true;
             }
             while (s2.next()) {
+//                System.out.println("next() s2.next()");
                 if (hashTable.keySet().contains(s2.getVal(joinfield2))) {
                     keyIterator = 1;
                     return true;

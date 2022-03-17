@@ -1,6 +1,10 @@
 ### Bonus Done:
 
 ####Created Query Optimiser to decide which join to use.
+1. First, enable cost calculation by `setting 'cost'`
+2. Enter any query consisting of a join, u will be able to see the estimated I/O cost for each join being considered. 
+For example, `EstimatedPlanCost> [enroll_tbl BlockJOIN(studentid=sid) student_tbl]: 505 I/O` shows that the estimated I/O cost
+for blockjoin is 505 I/O.
 
 #### Implement select all
 `select * from student`  

@@ -124,7 +124,7 @@ public class Planner {
             continue;
          if (!schema.hasField(fldname))
             throw new BadSyntaxException("Field '" + fldname + "' does not exist");
-         if (!data.hasGroupField(fldname))
+         if (!data.groupByFields().isEmpty() && !data.hasGroupField(fldname))
             throw new BadSyntaxException("Field '" + fldname + "' should be included in group by clause");
       }
    }

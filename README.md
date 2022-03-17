@@ -1,6 +1,6 @@
 ### Bonus Done:
 
-####Created Query Optimiser to decide which join to use.
+#### Created Query Optimiser to decide which join to use.
 
 #### Implement select all
 `select * from student`  

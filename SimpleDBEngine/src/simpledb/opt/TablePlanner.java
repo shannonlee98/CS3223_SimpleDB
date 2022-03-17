@@ -99,7 +99,7 @@ class TablePlanner {
         JoinPlans.put(Setting.JoinMode.product, new MultibufferProductPlan(tx, current, myplan));
         if (condOp.getVal() == CondOp.types.equals) {
             JoinPlans.put(Setting.JoinMode.hash, new GraceHashJoinPlan(tx, current, myplan, lhsfield, rhsfield));
-            JoinPlans.put(Setting.JoinMode.merge, new MergeJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield, false));
+            JoinPlans.put(Setting.JoinMode.merge, new MergeJoinPlan(tx, current, myplan, lhsfield, condOp, rhsfield));
             JoinPlans.put(Setting.JoinMode.index, makeIndexJoin(current, currsch));
         }
 

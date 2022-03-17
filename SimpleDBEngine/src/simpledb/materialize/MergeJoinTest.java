@@ -30,7 +30,7 @@ public class MergeJoinTest {
 
     private static void useMergeJoin(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
         // Open a merge join scan on the table.
-        Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, new CondOp(CondOp.types.equals), joinfield2, false);
+        Plan mergeplan = new MergeJoinPlan(tx, p1, p2, joinfield1, new CondOp(CondOp.types.equals), joinfield2);
         Scan s = mergeplan.open();
 
         while (s.next()) {

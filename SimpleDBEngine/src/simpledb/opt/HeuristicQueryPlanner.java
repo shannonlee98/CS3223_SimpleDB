@@ -55,12 +55,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
       // Step 4: Add a sort plan if ordered
       if (!data.orderByFields().isEmpty()) {
-         currentplan = new SortPlan(tx, currentplan, data.orderByFields(), data.isDistinct());
+         currentplan = new SortPlan(tx, currentplan, data.orderByFields());
       }
 
       // Step 5: Add a group plan if there is aggregation or 'group by'
       if (!data.groupByFields().isEmpty() || !data.aggregates().isEmpty()) {
-         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggregates(), data.isDistinct());
+         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggregates());
       }
 
       // Step 6:  Project on the field names and return

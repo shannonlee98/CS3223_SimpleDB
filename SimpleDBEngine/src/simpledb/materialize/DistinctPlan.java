@@ -51,7 +51,7 @@ public class DistinctPlan implements Plan {
         if (runs.size() > 0) {
             srcPlus = runs.get(0).open();
         }
-        return new DistinctScan(srcPlus);
+        return srcPlus;
     }
 
     /**

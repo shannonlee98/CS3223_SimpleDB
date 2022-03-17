@@ -33,7 +33,7 @@ public class MergeJoinPlan implements Plan {
      * @param tx       the calling transaction
      */
     public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1,
-                         CondOp condOp, String fldname2, boolean isDistinct) {
+                         CondOp condOp, String fldname2) {
         this.fldname1 = fldname1;
 
         // we use the same collection to store the sort fields for merge sort
@@ -41,13 +41,13 @@ public class MergeJoinPlan implements Plan {
         LinkedHashMap<String, Boolean> sortlist1 = new LinkedHashMap<>() {{
             put(fldname1, true);
         }};
-        this.p1 = new SortPlan(tx, p1, sortlist1, isDistinct);
+        this.p1 = new SortPlan(tx, p1, sortlist1);
         this.fldname2 = fldname2;
 
         LinkedHashMap<String, Boolean> sortlist2 = new LinkedHashMap<>() {{
             put(fldname2, true);
         }};
-        this.p2 = new SortPlan(tx, p2, sortlist2, isDistinct);
+        this.p2 = new SortPlan(tx, p2, sortlist2);
 
         sch.addAll(this.p1.schema());
         sch.addAll(this.p2.schema());

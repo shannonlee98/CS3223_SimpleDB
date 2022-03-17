@@ -79,7 +79,7 @@ public class BlockJoinPlan implements Plan {
         Plan mpInner = new MaterializePlan(tx, inner); // not opened; just for analysis
         Plan mpOuter = new MaterializePlan(tx, outer); // not opened; just for analysis
 
-        int avail = Math.min(1, tx.availableBuffs() - 2);
+        int avail = Math.max(1, tx.availableBuffs() - 2);
         int size = mpOuter.blocksAccessed();
 
         // this guesses at the # of chunks

@@ -21,14 +21,16 @@ public class Tester {
 //         String qry = "select *, count(sname), count(*) from student group by gradyear"; // completed
 //         String qry = "select count(*) from student group by majorid"; // completed
 //         String qry = "select count(distinct gradyear), majorid from student group by majorid";
-         String qry = "select sid from student group by majorid";
-
+//         String qry = "select sname from student where majorid = 20";
+         String qry = "select sname, title, prof, grade from student, enroll, course, " +
+                 "section where studentid = sid and sectionid = sectid and courseid = cid";
          Plan p = planner.createQueryPlan(qry, tx);
 
          // analogous to the result set
          Scan s = p.open();
 
          System.out.println("success");
+         while (s.next());
 //         System.out.println("Count of majorid\tmajorid\"");
 //         while (s.next()) {
 //            String count = s.getString("countofmajorid"); //in lower case

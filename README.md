@@ -1,6 +1,10 @@
 ### Bonus Done:
 
 #### Created Query Optimiser to decide which join to use.
+1. First, enable cost calculation by `setting 'cost'`
+2. Enter any query consisting of a join, u will be able to see the estimated I/O cost for each join being considered. 
+For example, `EstimatedPlanCost> [enroll_tbl BlockJOIN(studentid=sid) student_tbl]: 505 I/O` shows that the estimated I/O cost
+for blockjoin is 505 I/O.
 
 #### Implement select all
 `select * from student`  
@@ -42,6 +46,10 @@ create a long query to see how query plan will look like
 #### Examples for Index Join to be Cheapest
 1. `select sname, grade from student, enroll where studentid = sid and studentid = 30 order by sname asc, grade asc`
 2. `select sname, grade from student, enroll where studentid = sid and studentid = 2000 order by sname asc, grade asc`
+
+#### Single table queries:
+1. `select count(gradyear), gradyear from student group by gradyear`
+2. `select studentid from enroll where studentid > 100`
 
 #### 2 table equi-joins:
 1. `select sname, grade from student, enroll where studentid = sid order by sname asc, grade asc`   

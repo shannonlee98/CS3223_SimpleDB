@@ -23,8 +23,6 @@ public class GraceHashJoinPlan implements Plan {
     private String joinfieldSmaller;
     private String joinfieldLarger;
     private Schema sch = new Schema();
-    private int partitions;
-    private int estimatedPartitionMultiplier = 1;
 
     /**
      * Implements the join operator,
@@ -37,22 +35,13 @@ public class GraceHashJoinPlan implements Plan {
      * @param joinfield2 the right-hand field used for joining
      */
     public GraceHashJoinPlan(Transaction tx, Plan p1, Plan p2, String joinfield1, String joinfield2) {
-        //we immediately predict the best probing partition based on recordsOutput.
+        // we immediately predict the best probing plan and best plan to store its partitions in a hash table
+        // based on recordsOutput. The smaller plan's partitions will be stored in the hash table for the hash join.
         this.smaller = p1.recordsOutput() > p2.recordsOutput() ? p2 : p1;
         this.larger = p1.recordsOutput() > p2.recordsOutput() ? p1 : p2;
 
         this.joinfieldSmaller = p1.recordsOutput() > p2.recordsOutput() ? joinfield2 : joinfield1;
         this.joinfieldLarger = p1.recordsOutput() > p2.recordsOutput() ? joinfield1 : joinfield2;
-
-        partitions = Math.max(tx.availableBuffs() - 1, 1);
-
-        //we assume that the hash function splits the records evenly when computing the cost function.
-        int hashTableBlockSize = (int) Math.ceil(Math.min(p1.blocksAccessed(),
-                p2.blocksAccessed()) * 1.0 / partitions);
-        while (hashTableBlockSize > Math.max(tx.availableBuffs() - 2, 1)) { // Divide M by (B-1) until 'M/(B-1) <= B-2'
-            estimatedPartitionMultiplier++;
-            hashTableBlockSize = (int) Math.ceil(hashTableBlockSize * 1.0 / partitions);
-        }
 
         sch.addAll(p1.schema());
         sch.addAll(p2.schema());
@@ -65,9 +54,11 @@ public class GraceHashJoinPlan implements Plan {
      * @see Plan#open()
      */
     public Scan open() {
+        //we first split the 2 plans into partitions.
         List<TempTable> smallerPartitions = getPartitions(smaller.open(), smaller.schema(), joinfieldSmaller);
         List<TempTable> largerPartitions = getPartitions(larger.open(), larger.schema(), joinfieldLarger);
 
+        //we keep track of the partitions that exceed the maximum capacity (max capacity = B - 2)
         List<Integer> toSplit;
 
         while (true) {
@@ -83,7 +74,7 @@ public class GraceHashJoinPlan implements Plan {
                 break;
             }
 
-            //add new splitted partitions.
+            //add new partitions from each split.
             for (int i : toSplit) {
                 smallerPartitions.addAll(
                         getPartitions(
@@ -98,7 +89,7 @@ public class GraceHashJoinPlan implements Plan {
                                 joinfieldLarger));
             }
 
-            //remove old splitted partitions.
+            //remove old partitions that were split.
             for (int i : toSplit) {
                 smallerPartitions.remove(i);
                 largerPartitions.remove(i);
@@ -121,11 +112,21 @@ public class GraceHashJoinPlan implements Plan {
         Plan mpSmaller = new MaterializePlan(tx, smaller); // not opened; just for analysis
         Plan mpLarger = new MaterializePlan(tx, larger); // not opened; just for analysis
 
+        // we first assume that the hash function splits the records evenly when computing the cost function.
+        // often, the splitting will not be even. That will be handled in open().
+        // to find number of partitioning rounds = ceil(log(ceil(M/(B-2))) / log(B-1))
+        // #derived from M/(B-1)^partitioningRounds <= B-2
+
+        int estimatedPartitionRounds = (int) Math.ceil(
+                Math.log(Math.ceil(mpSmaller.blocksAccessed() * 1.0 / (Math.max(tx.availableBuffs() - 2, 1))) /
+                        Math.log(Math.max(tx.availableBuffs() - 1, 1))));
+        estimatedPartitionRounds = Math.max(estimatedPartitionRounds, 1);
+
         int carryoverCost = Math.max(smaller.blocksAccessed() +
                 larger.blocksAccessed() - mpSmaller.blocksAccessed() - mpLarger.blocksAccessed(), 0);
 
         return mpSmaller.blocksAccessed() + mpLarger.blocksAccessed() +
-                2 * (mpSmaller.blocksAccessed() + mpLarger.blocksAccessed()) * estimatedPartitionMultiplier +
+                2 * (mpSmaller.blocksAccessed() + mpLarger.blocksAccessed()) * estimatedPartitionRounds +
                 carryoverCost;
     }
 
@@ -133,6 +134,7 @@ public class GraceHashJoinPlan implements Plan {
      * Return the number of records in the join.
      * Assuming uniform distribution, the formula is:
      * <pre> R(join(p1,p2)) = R(p1)*R(p2)/max{V(p1,F1),V(p2,F2)}</pre>
+     *
      * @see simpledb.plan.Plan#recordsOutput()
      */
     public int recordsOutput() {
@@ -165,15 +167,14 @@ public class GraceHashJoinPlan implements Plan {
 
     /**
      * Split the given scan into partitions in the form of temp tables.
-     * @param src the scan to be split
-     * @param sch the schema of the scan
+     *
+     * @param src         the scan to be split
+     * @param sch         the schema of the scan
      * @param hashonfield the field for the hashcode
      * @return a list of partitions in the form of temp tables.
      */
     private List<TempTable> getPartitions(Scan src, Schema sch, String hashonfield) {
-
-        //open all partitions, write, then close all partitions.
-        //open and closing might incur I/O, at least opening probably would.
+        int partitions = tx.availableBuffs() - 1;
 
         List<TempTable> ttList = new ArrayList<>();
         List<UpdateScan> scanList = new ArrayList<>();

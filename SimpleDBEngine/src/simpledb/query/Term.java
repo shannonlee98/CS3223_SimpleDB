@@ -115,27 +115,6 @@ public class Term {
     }
 
     /**
-     * Determine if this term is of the form "F1XF2"
-     * where F1 is the specified field, F2 is another field
-     * and X is a conditional operator.
-     *
-     * @param f1 the name of the first field
-     * @param f2 the name of the second field
-     * @return true if there is a relationship between the two fields
-     */
-    public boolean hasRelationBetweenField(String f1, String f2) {
-        return (lhs.isFieldName() &&
-                lhs.asFieldName().equals(f1) &&
-                rhs.isFieldName() &&
-                rhs.asFieldName().equals(f2)) ||
-                (rhs.isFieldName() &&
-                        rhs.asFieldName().equals(f1) &&
-                        lhs.isFieldName() &&
-                        lhs.asFieldName().equals(f2));
-    }
-
-
-    /**
      * Determine if this term is of the form "F1=F2"
      * where F1 is the specified field and F2 is another field.
      * If so, the method returns the name of that field.

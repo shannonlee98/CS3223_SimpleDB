@@ -64,6 +64,11 @@ from student, enroll, course, section
 where studentid = sid 
 and sectionid = sectid 
 and courseid = cid`
+2. `select sname, title, prof, grade
+   from student, enroll, course, section
+   where studentid = sid
+   and sectionid = sectid
+   and courseid = cid order by sname desc, title asc, prof desc, grade desc`
 
 ### Example settings for join:
 1. `setting 'cost'`

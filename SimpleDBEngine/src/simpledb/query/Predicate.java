@@ -185,44 +185,6 @@ public class Predicate {
       return null;
    }
 
-   /**
-    * Determine the conditional operator between two fields
-    * @param f1 the name of the first field
-    * @param f2 the name of the second field
-    */
-   public CondOp relationBetweenFields(String f1, String f2) {
-      //prioritise equals, after that which ever term comes first.
-      CondOp firstMatch = null;
-      for (Term t : terms) {
-         if (t.hasRelationBetweenField(f1, f2) && firstMatch == null) {
-            firstMatch = t.getCondOp();
-         } else if (t.hasRelationBetweenField(f1, f2) && t.getCondOp().getVal() == CondOp.types.equals) {
-            return t.getCondOp();
-         }
-      }
-
-      return firstMatch;
-   }
-
-//   /**
-//    * Determine if there is a term of the form "F1XF2"
-//    * where F1 is the specified field and F2 is another field.
-//    * If so, the method returns the name of that field.
-//    * If not, the method returns null.
-//    * @param f1 the name of one the field
-//    * @param f2 the name of the other field
-//    * @return the name of the other field, or null
-//    */
-//   public Predicate relationBetweenField(String f1, String f2) {
-//      Predicate result = new Predicate();
-//      for (Term t : terms) {
-//         if (t.relationBetweenField(f1, f2)) {
-//            result.terms.add(t);
-//         }
-//      }
-//      return result;
-//   }
-
    public String toString() {
       Iterator<Term> iter = terms.iterator();
       if (!iter.hasNext()) 

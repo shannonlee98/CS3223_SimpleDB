@@ -47,6 +47,10 @@ create a long query to see how query plan will look like
 1. `select sname, grade from student, enroll where studentid = sid and studentid = 30 order by sname asc, grade asc`
 2. `select sname, grade from student, enroll where studentid = sid and studentid = 2000 order by sname asc, grade asc`
 
+#### Single table queries:
+1. `select count(gradyear), gradyear from student group by gradyear`
+2. `select studentid from enroll where studentid > 100`
+
 #### 2 table equi-joins:
 1. `select sname, grade from student, enroll where studentid = sid order by sname asc, grade asc`   
 2. `select sname,dname from dept, student where majorid=did`

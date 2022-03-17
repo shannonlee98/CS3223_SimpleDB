@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="merge master">
+    <list default="true" id="fd2489fb-b203-490b-9a9a-020ce6dd02a0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SortPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SortPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/multibuffer/BlockJoinScan.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,8 +123,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.SimpleIJ" />
-        <item itemvalue="Application.Tester" />
         <item itemvalue="Application.CreateDemoDB" />
+        <item itemvalue="Application.Tester" />
         <item itemvalue="Application.IndexJoinTest" />
         <item itemvalue="Application.CreateStudentDB" />
       </list>
@@ -161,7 +157,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

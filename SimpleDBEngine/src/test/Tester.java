@@ -21,7 +21,7 @@ public class Tester {
 //         String qry = "select *, count(sname), count(*) from student group by gradyear"; // completed
 //         String qry = "select count(*) from student group by majorid"; // completed
 //         String qry = "select count(distinct gradyear), majorid from student group by majorid";
-         String qry = "select sname from where majorid = 20";
+         String qry = "select sid from student group by majorid";
 
          Plan p = planner.createQueryPlan(qry, tx);
 

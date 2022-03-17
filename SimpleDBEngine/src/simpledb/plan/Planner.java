@@ -1,6 +1,5 @@
 package simpledb.plan;
 
-import simpledb.materialize.AggregationFn;
 import simpledb.query.Predicate;
 import simpledb.record.Schema;
 import simpledb.tx.Transaction;
@@ -121,36 +120,13 @@ public class Planner {
       for (String fldname : data.fields()) {
          if (fldname.equals("*"))
             continue;
-         if (isAggregationFunction(data.aggregates(), fldname))
+         if (data.isAggregationFunction(fldname))
             continue;
-         if (!schema.hasField(fldname)) {
+         if (!schema.hasField(fldname))
             throw new BadSyntaxException("Field '" + fldname + "' does not exist");
-         }
-         if (!data.aggregates().isEmpty() && !hasGroupField(data, fldname))
+         if (!data.hasGroupField(fldname))
             throw new BadSyntaxException("Field '" + fldname + "' should be included in group by clause");
       }
-   }
-
-   private boolean hasGroupField(QueryData data, String fldname) {
-      for (String group : data.groupByFields())
-         if (group.equals(fldname))
-            return true;
-      return false;
-   }
-
-   /**
-    * Checks if the field name is a column name of any
-    * aggregation functions
-    * @param aggregates List of aggregate functions
-    * @param fldname Field name to be verified
-    * @return True if the field is a column name of any
-    * aggregation function, false otherwise
-    */
-   private boolean isAggregationFunction(List<AggregationFn> aggregates, String fldname) {
-      for (AggregationFn aggrFn : aggregates)
-         if (fldname.equals(aggrFn.fieldName()))
-            return true;
-      return false;
    }
 
    // SimpleDB does not verify updates, although it should.

@@ -59,10 +59,23 @@ public class QueryData {
     */
    public List<String> aggregatesFields() {
       List<String> aggregateFields = new ArrayList<>();
-      for (AggregationFn aggrFn : aggregates) {
+      for (AggregationFn aggrFn : aggregates)
          aggregateFields.add(aggrFn.field());
-      }
       return aggregateFields;
+   }
+
+   /**
+    * Checks if the field name is a column name of any
+    * aggregation functions
+    * @param fldname Field name to be verified
+    * @return True if the field is a column name of any
+    * aggregation function, false otherwise
+    */
+   public boolean isAggregationFunction(String fldname) {
+      for (AggregationFn aggrFn : aggregates)
+         if (fldname.equals(aggrFn.fieldName()))
+            return true;
+      return false;
    }
 
    /**
@@ -82,11 +95,34 @@ public class QueryData {
       return pred;
    }
 
+   /**
+    * Returns a Linked hash map with field as key and
+    * isAsc boolean as value
+    * @return the order by fields
+    */
    public LinkedHashMap<String, Boolean> orderByFields() {
       return orderByFields;
    }
 
+   /**
+    * Returns the list of group by fields
+    * @return the group by fields
+    */
    public List<String> groupByFields() { return groupByFields; }
+
+
+   /**
+    * Checks if the field provided is in the list of group
+    * by fields
+    * @param fldname field name to be checked
+    * @return true if the field is in the group by field list
+    */
+   public boolean hasGroupField(String fldname) {
+      for (String group : groupByFields)
+         if (group.equals(fldname))
+            return true;
+      return false;
+   }
 
    public String toString() {
       String result = "select ";

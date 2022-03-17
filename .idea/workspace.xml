@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="merge master">
+      <change afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoOldDB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/controller/Setting.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/controller/Setting.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinPlan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinScan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/hash/GraceHashJoinScan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SimpleJoinPlan.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/materialize/SimpleJoinScan.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Lexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/QueryData.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/parse/QueryData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/Planner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/plan/ProjectPlan.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateDemoDB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/Tester.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

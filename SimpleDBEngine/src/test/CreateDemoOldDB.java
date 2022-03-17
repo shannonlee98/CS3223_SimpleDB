@@ -4,7 +4,7 @@ import simpledb.plan.Planner;
 import simpledb.server.SimpleDB;
 import simpledb.tx.Transaction;
 
-public class CreateDemoDB {
+public class CreateDemoOldDB {
     public static void main(String[] args) {
 
         try {
@@ -20,21 +20,13 @@ public class CreateDemoDB {
             planner.executeUpdate(qry, tx);
             System.out.println("Table STUDENT created.");
 
+            qry = "create index major_idx on student(majorid) using hash";
+            planner.executeUpdate(qry, tx);
+            System.out.println("Created index major_idx in student table");
+
             qry = "create index sid_idx on student(sid) using hash";
             planner.executeUpdate(qry, tx);
             System.out.println("Created index sid_idx in student table");
-
-            qry = "create index cid_idx on course(cid) using hash";
-            planner.executeUpdate(qry, tx);
-            System.out.println("Created index cid_idx in course");
-
-            qry = "create index sectid_idx on section(sectid) using hash";
-            planner.executeUpdate(qry, tx);
-            System.out.println("Created index sectid_idx in student table");
-
-            qry = "create index studentid_idx on enroll(studentid) using btree";
-            planner.executeUpdate(qry, tx);
-            System.out.println("Created index studentid_idx in enroll");
 
             qry = "insert into STUDENT(SId, SName, MajorId, GradYear) values ";
             //Problem names: D'arcy, Miof, Terri-jo
@@ -1065,6 +1057,10 @@ public class CreateDemoDB {
             planner.executeUpdate(qry, tx);
             System.out.println("Table COURSE created.");
 
+            qry = "create index cid_idx on course(cid) using hash";
+            planner.executeUpdate(qry, tx);
+            System.out.println("Created index cid_idx in course");
+
             qry = "insert into COURSE(CId, Title, DeptId) values ";
             String[] coursevals = {
                     "(10, 'db systems', 10)",
@@ -1275,6 +1271,10 @@ public class CreateDemoDB {
             qry = "create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))";
             planner.executeUpdate(qry, tx);
             System.out.println("Table ENROLL created.");
+
+            qry = "create index studentid_idx on enroll(studentid) using btree";
+            planner.executeUpdate(qry, tx);
+            System.out.println("Created index studentid_idx in enroll");
 
             qry = "insert into ENROLL(EId, StudentId, SectionId, Grade) values ";
             String[] enrollvals = {"(1,12,73,'A-')",

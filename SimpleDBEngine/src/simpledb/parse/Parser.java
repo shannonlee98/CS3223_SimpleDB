@@ -104,24 +104,37 @@ public class Parser {
 
         lex.eatKeyword("from");
         Collection<String> tables = tableList();
+
         Predicate pred = new Predicate();
-        if (lex.matchKeyword("where")) {
-            lex.eatKeyword("where");
-            pred = predicate();
-        }
         LinkedHashMap<String, Boolean> orderByFields = new LinkedHashMap<>();
-        if (lex.matchKeyword("order")) {
-            lex.eatKeyword("order");
-            lex.eatKeyword("by");
-            orderByFields = orderByList();
-        }
         List<String> groupByFields = new ArrayList<>();
-        if (lex.matchKeyword("group")) {
-            lex.eatKeyword("group");
-            lex.eatKeyword("by");
-            groupByFields = groupByList();
+        while (true) {
+            if (lex.matchKeyword("where")) {
+                lex.eatKeyword("where");
+                pred = predicate();
+            } else if (lex.matchKeyword("order")) {
+                eatBy("order");
+                orderByFields = orderByList();
+            } else if (lex.matchKeyword("group")) {
+                eatBy("group");
+                groupByFields = groupByList();
+            } else {
+                break;
+            }
         }
+        if (lex.matchIntConstant())
+            throw new BadSyntaxException("Unexpected integer: " + lex.eatIntConstant());
+        if (lex.matchString())
+            throw new BadSyntaxException("Unexpected string: " + lex.eatString());
         return new QueryData(isDistinct, fields, aggregates, tables, pred, orderByFields, groupByFields);
+    }
+
+    private void eatBy(String keyword) {
+        lex.eatKeyword(keyword);
+        if (lex.matchKeyword("by"))
+            lex.eatKeyword("by");
+        else
+            throw new BadSyntaxException("Expected 'by' after keyword '" + keyword + "'");
     }
 
 

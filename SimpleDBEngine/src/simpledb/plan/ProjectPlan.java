@@ -1,6 +1,5 @@
 package simpledb.plan;
 
-import java.util.Arrays;
 import java.util.List;
 
 import simpledb.display.ExecutionChain;

@@ -55,6 +55,14 @@ public class Lexer {
    public boolean matchStringConstant() {
       return '\'' == (char)tok.ttype;
    }
+
+   /**
+    * Returns true if the current token is a string.
+    * @return true if the current token is a string
+    */
+   public boolean matchString() {
+      return tok.ttype == StreamTokenizer.TT_WORD;
+   }
    
    /**
     * Returns true if the current token is the specified keyword.
@@ -150,6 +158,18 @@ public class Lexer {
    public String eatStringConstant() {
       if (!matchStringConstant())
          throw new BadSyntaxException();
+      String s = tok.sval; //constants are not converted to lower case
+      nextToken();
+      return s;
+   }
+
+   /**
+    * Throws an exception if the current token is not
+    * a string.
+    * Otherwise, returns that string and moves to the next token.
+    * @return the string value of the current token
+    */
+   public String eatString() {
       String s = tok.sval; //constants are not converted to lower case
       nextToken();
       return s;

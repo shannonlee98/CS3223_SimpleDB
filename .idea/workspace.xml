@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fd2489fb-b203-490b-9a9a-020ce6dd02a0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/SimpleDBEngine/src/test/CreateRealDemoDB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,6 +52,7 @@
       <recent name="C:\Users\ZhengWen\Documents\Nus mods\Y4S2\CS3223\CS3223_SimpleDB\SimpleDBEngine\src\simpledb\materialize" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="test" />
       <recent name="simpledb.materialize" />
     </key>
   </component>

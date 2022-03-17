@@ -111,8 +111,8 @@ public class Planner {
    /**
     * Checks if each field is valid. Throws error if the field
     * is not in the schema and also not the column name of any
-    * aggregation function. Throws error if there are aggregation
-    * functions along with fields that are not in the group by clause
+    * aggregation function. Throws error if there is a group by
+    * clause but the field is not included in the group by clause
     * @param data data of the query
     * @param schema Schema of the all fields from selected tables
     */

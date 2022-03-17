@@ -32,12 +32,12 @@ public class GroupByPlan implements Plan {
      * @param aggfns      the aggregation functions
      * @param tx          the calling transaction
      */
-    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns, boolean isDistinct) {
+    public GroupByPlan(Transaction tx, Plan p, List<String> groupfields, List<AggregationFn> aggfns) {
         LinkedHashMap<String, Boolean> mapGroupfields = new LinkedHashMap<>();
         for (String field : groupfields) {
             mapGroupfields.put(field, true);
         }
-        this.p = new SortPlan(tx, p, mapGroupfields, isDistinct);
+        this.p = new SortPlan(tx, p, mapGroupfields);
         this.groupfields = groupfields;
         this.aggfns = aggfns;
         for (String fldname : groupfields)

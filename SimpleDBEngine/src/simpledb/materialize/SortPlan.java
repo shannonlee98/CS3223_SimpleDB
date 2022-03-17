@@ -67,9 +67,15 @@ public class SortPlan implements Plan {
         //we add a carryover cost to include the additional block accessed from using plan p
         int carryoverCost = Math.max(p.blocksAccessed() - mp.blocksAccessed(), 0);
 
-        return mp.blocksAccessed() * 2 +
-                (int) Math.ceil(Math.log(Math.ceil(mp.recordsOutput() * 1.0 / 2)) / Math.log(2)) +
-                carryoverCost;
+        //calculate number of sorted runs
+        //Based on the split into runs function, average number of sorted runs = (number of records)/2
+        int numSortedRuns = (int) Math.ceil(mp.recordsOutput() * 1.0 / 2);
+
+        //number of passes for a 2 way merge = ceil(log(numSortedRuns) / log(2)) + 1
+        int numPasses = (int) Math.ceil(Math.log(numSortedRuns) / Math.log(2)) + 1;
+
+        //cost is computed as numPasses * 2 * M
+        return mp.blocksAccessed() * 2 * numPasses + carryoverCost;
     }
 
     /**

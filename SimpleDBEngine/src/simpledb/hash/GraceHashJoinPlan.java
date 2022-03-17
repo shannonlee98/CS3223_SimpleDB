@@ -118,9 +118,9 @@ public class GraceHashJoinPlan implements Plan {
         // #derived from M/(B-1)^partitioningRounds <= B-2
 
         int estimatedPartitionRounds = (int) Math.ceil(
-                Math.log(Math.ceil(mpSmaller.blocksAccessed() * 1.0 / (tx.availableBuffs() - 2))) /
-                        Math.log(tx.availableBuffs() - 1));
-        estimatedPartitionRounds = Math.min(estimatedPartitionRounds, 0);
+                Math.log(Math.ceil(mpSmaller.blocksAccessed() * 1.0 / (Math.max(tx.availableBuffs() - 2, 1))) /
+                        Math.log(Math.max(tx.availableBuffs() - 1, 1))));
+        estimatedPartitionRounds = Math.max(estimatedPartitionRounds, 1);
 
         int carryoverCost = Math.max(smaller.blocksAccessed() +
                 larger.blocksAccessed() - mpSmaller.blocksAccessed() - mpLarger.blocksAccessed(), 0);

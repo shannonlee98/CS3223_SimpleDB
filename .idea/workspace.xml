@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-<<<<<<< Updated upstream
     <list default="true" id="fd2489fb-b203-490b-9a9a-020ce6dd02a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-=======
-    <list default="true" id="cd713865-5350-43d7-9e2e-6d6b37d8646f" name="Changes" comment="merge master">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Predicate.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Predicate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Term.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/query/Term.java" afterDir="false" />
->>>>>>> Stashed changes
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/controller/Setting.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/controller/Setting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/planner/IndexJoinPlan.java" beforeDir="false" afterPath="$PROJECT_DIR$/SimpleDBEngine/src/simpledb/index/planner/IndexJoinPlan.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,9 +127,9 @@
       <list>
         <item itemvalue="Application.SimpleIJ" />
         <item itemvalue="Application.CreateDemoDB" />
+        <item itemvalue="Application.CreateStudentDB" />
         <item itemvalue="Application.Tester" />
         <item itemvalue="Application.IndexJoinTest" />
-        <item itemvalue="Application.CreateStudentDB" />
       </list>
     </recent_temporary>
   </component>
@@ -166,6 +160,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

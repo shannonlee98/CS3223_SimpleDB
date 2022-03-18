@@ -108,7 +108,7 @@ public class Setting {
         }
 
         Duration timeElapsed = Duration.between(timeStart, timeEnd);
-        System.out.println(timeElapsed.getSeconds() + "." + timeElapsed.getNano() + "s");
+        System.out.println(timeElapsed.getSeconds() + timeElapsed.getNano() * 1e-9 + "s");
     }
 
     public boolean isPrintResults() {
